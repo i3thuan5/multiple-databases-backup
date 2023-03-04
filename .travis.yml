@@ -18,7 +18,7 @@ install:
 - unzip awscliv2.zip
 - sudo ./aws/install
 - pip install awscli-local
-before_scripts:
+before_script:
 - docker-compose --file tests/postgres15/docker-compose.yml up --detach
 - docker-compose --file tests/docker-compose-localstack.yml up --detach
 - docker-compose --file tests/docker-compose-backup.yml build
