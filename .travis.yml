@@ -6,9 +6,13 @@ language: python
 python:
 - '3.10'
 env:
-- BUCKET_NAME=backup_bucket
-- AWS_ACCESS_KEY_ID=test
-- AWS_SECRET_ACCESS_KEY=test
+  global:
+  - BUCKET_NAME=backup_bucket
+  - AWS_ACCESS_KEY_ID=test
+  - AWS_SECRET_ACCESS_KEY=test
+branches:
+  only:
+  - main
 install:
 - pip install awscli awscli-local
 script:
