@@ -22,4 +22,5 @@ script:
 - docker-compose up -d
 - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
 - TIME=`date "+%Y%m%dT%H%M"`
-- awslocal s3api get-object --bucket ${BUCKET_NAME} --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz"
+- awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz"
+- awslocal s3api list-objects --bucket
