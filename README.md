@@ -24,9 +24,9 @@ services:
       S3_ACCESS_KEY_ID: key
       S3_SECRET_ACCESS_KEY: secret
       S3_BUCKET: my-bucket
-      SCHEDULE=@daily # Optional
-      BACKUP_KEEP_MINS=1440 # Optional
-      BACKUP_KEEP_DAYS=7 # Optional
-      BACKUP_KEEP_WEEKS=4 # Optional
-      BACKUP_KEEP_MONTHS=6 # Optional
+      SCHEDULE: @daily # Optional
+      BACKUP_KEEP_MINS: 1440 # Optional
+      BACKUP_KEEP_DAYS: 7 # Optional
+      BACKUP_KEEP_WEEKS: 4 # Optional
+      BACKUP_KEEP_MONTHS: 6 # Optional
 ```
