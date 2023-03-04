@@ -1,0 +1,13 @@
+version: '3'
+services:
+  backup:
+    build: ../
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      S3_ENDPOINT_URL: "http://localstack:4566"
+      S3_REGION: region
+      S3_ACCESS_KEY_ID: test
+      S3_SECRET_ACCESS_KEY: test
+      S3_BUCKET: ${BUCKET_NAME:-backup-bucket}
+      SCHEDULE: "0 * * * *"
