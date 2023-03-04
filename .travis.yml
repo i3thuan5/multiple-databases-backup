@@ -16,7 +16,7 @@ branches:
 install:
 - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 - unzip awscliv2.zip
-- ./aws/install
+- sudo ./aws/install
 - pip install awscli-local
 script:
 - cd tests/postgres15
@@ -26,4 +26,4 @@ script:
 - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
 - TIME=`date "+%Y%m%dT%H%M"`
 - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz"
-- awslocal s3api list-objects --bucket
+- awslocal s3api list-objects --bucket "${BUCKET_NAME}"
