@@ -1,6 +1,6 @@
 os: linux
 dist: jammy
-service:
+services:
 - docker
 language: python
 python:
