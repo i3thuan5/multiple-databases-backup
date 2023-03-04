@@ -19,7 +19,7 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      S3_ENDPOINT: https://domain.tw
+      S3_ENDPOINT_URL: https://domain.tw
       S3_REGION: region
       S3_ACCESS_KEY_ID: key
       S3_SECRET_ACCESS_KEY: secret
