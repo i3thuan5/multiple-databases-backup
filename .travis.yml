@@ -20,9 +20,10 @@ install:
 - pip install awscli-local
 script:
 - cd tests/postgres15
-- docker-compose up -d
+- docker-compose up --detach
 - cd ..
-- docker-compose up -d
+- docker-compose build
+- docker-compose up --detach
 - sleep 10
 - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
 - export TIME=`date "+%Y%m%dT%H%M"`
