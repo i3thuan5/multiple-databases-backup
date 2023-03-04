@@ -1,7 +1,7 @@
 version: '3'
 services:
   backup:
-    image: ithuan/multiple-databases-backup
+    build: ../
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     environment:
