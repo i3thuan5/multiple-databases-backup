@@ -20,7 +20,7 @@ install:
 - pip install awscli-local
 jobs:
   include:
-    - name: postgres15
+    - name: backup once
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/docker-compose-localstack.yml up --detach
@@ -32,6 +32,18 @@ jobs:
       - export TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: starting message
+      before_script:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      script:
+      - docker-compose --file tests/docker-compose-backup.yml up --detach
+      - sleep 1
+      - docker-compose --file tests/docker-compose-backup.yml logs | grep 'starting, backup first.'
+      - docker-compose --file tests/docker-compose-backup.yml logs | grep 'finished.'
     - name: crontab
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
