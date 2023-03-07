@@ -1,0 +1,8 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:15
+    labels:
+      - backup.postgres=true
+    environment:
+      POSTGRES_PASSWORD: secret

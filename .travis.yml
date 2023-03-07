@@ -1,0 +1,31 @@
+os: linux
+dist: jammy
+services:
+- docker
+language: python
+python:
+- '3.10'
+env:
+  global:
+  - BUCKET_NAME=backup-bucket
+  - AWS_ACCESS_KEY_ID=test
+  - AWS_SECRET_ACCESS_KEY=test
+branches:
+  only:
+  - main
+install:
+- curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+- unzip awscliv2.zip
+- sudo ./aws/install
+- pip install awscli-local
+before_script:
+- docker-compose --file tests/postgres15/docker-compose.yml up --detach
+- docker-compose --file tests/docker-compose-localstack.yml up --detach
+- docker-compose --file tests/docker-compose-backup.yml build
+- sleep 10
+- awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+script:
+- docker-compose --file tests/docker-compose-backup.yml up --detach
+- export TIME=`date "+%Y%m%dT%H%M"`
+- awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
+- awslocal s3api list-objects --bucket "${BUCKET_NAME}"
