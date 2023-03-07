@@ -45,6 +45,7 @@ jobs:
       - sleep 10
       - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is starting, backup first.'
       - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is finished, exiting.'
+      - docker-compose --file tests/docker-compose-backup.yml logs
     - name: crontab
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
