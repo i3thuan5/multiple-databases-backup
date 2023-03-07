@@ -11,3 +11,9 @@ services:
       S3_SECRET_ACCESS_KEY: test
       S3_BUCKET: ${BUCKET_NAME:-backup-bucket}
       SCHEDULE: "* * * * *"
+    networks:
+      s3_default:
+
+networks:
+  s3_default:
+    external: true
