@@ -23,7 +23,7 @@ jobs:
     - name: backup once
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
-      - docker-compose --file tests/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
@@ -35,7 +35,7 @@ jobs:
     - name: starting message
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
-      - docker-compose --file tests/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
@@ -47,7 +47,7 @@ jobs:
     - name: crontab
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
-      - docker-compose --file tests/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
