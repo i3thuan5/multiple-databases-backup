@@ -3,7 +3,7 @@ set -euo pipefail
 
 >&2 echo 'multiple-databases-backup is starting, backup first.'
 sh /app/backup.sh
-if [ -z "${SCHEDULE}" ];
+if [ -z "${SCHEDULE:-}" ];
 then
   >&2 echo "There is not SCHEDULE variable, backup once.";
 else
