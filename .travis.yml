@@ -63,3 +63,25 @@ jobs:
       - export TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup once in tty even setting SCHEDULE
+      before_script:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-minute.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      script:
+      - docker-compose --file tests/docker-compose-backup-minute.yml run --rm backup
+      - export TIME=`date "+%Y%m%dT%H%M"`
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup once message in tty even setting SCHEDULE
+      before_script:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-minute.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      script:
+      - docker-compose --file tests/docker-compose-backup-minute.yml run --rm backup | tee backup.log
+      - cat backup.log | grep 'Backup once beacause in tty mode, even setting the SCHEDULE varable.'
