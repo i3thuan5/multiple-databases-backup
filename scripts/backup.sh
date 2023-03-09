@@ -11,5 +11,5 @@ do
         AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID}" \
         AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}" \
         aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
-        - "s3://${S3_BUCKET}/${postgres_container_name}/${postgres_container_name}_`date "+%Y%m%dT%H%M"`.sql.gz"
+        - "s3://${S3_BUCKET}/${postgres_container_name}/`date "+%Y-%m-%d"`/${postgres_container_name}_`date "+%Y%m%dT%H%M"`.sql.gz"
 done
