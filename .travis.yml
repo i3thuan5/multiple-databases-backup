@@ -73,3 +73,13 @@ jobs:
       script:
       - docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup | tee backup.log
       - cat backup.log | grep 'There is not SCHEDULE variable'
+    - name: exit with SCHEDULE wrong format
+      before_script:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-minute.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      script:
+      - docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE="X * *" backup || echo "Backup failed" > backup.log
+      - test -f backup.log
