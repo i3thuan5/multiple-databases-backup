@@ -7,7 +7,7 @@ if [ -z "${SCHEDULE:-}" ]; then
   >&2 echo "There is not SCHEDULE variable, backup once.";
   >&2 echo 'multiple-databases-backup is finished, exiting.'
   exit 0
-elif [[ "${SCHEDULE}" =~ ^(([[:punct:]]|[[:alnum:]])*[[:blank:]]){4}([[:punct:]]|[[:alnum:]])*$ ]]; then
+elif [[ "${SCHEDULE}" =~ ^([^[:blank:]]*[[:blank:]]){4}([^[:blank:]])*$ ]]; then
   >&2 echo "There is the SCHEDULE variable: '${SCHEDULE}', backup periodically.";
   bash /app/crontab.sh
 else
