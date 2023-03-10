@@ -81,5 +81,5 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE="X * *" backup || echo "Backup failed" > backup.log
-      - test -f backup.log
+      - (docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE="X * *" backup | tee backup.log) || echo "The exit code is $?."
+      - cat backup.log | grep 'The SCHEDULE variable should contain five fields exactly.'
