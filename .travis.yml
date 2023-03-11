@@ -99,7 +99,6 @@ jobs:
       - gpg --import tests/gpg-key/2B475965178BAFE3E35201E0C77ACD33AFFADC62.rev
       - GPG_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_KEY=${GPG_KEY}" | tee .env
-      - gpg trust
       - docker-compose --file tests/docker-compose-backup-encrypt.yml up --detach
       - export DATE=`date "+%Y-%m-%d"`
       - export TIME=`date "+%Y%m%dT%H%M"`
