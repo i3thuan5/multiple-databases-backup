@@ -97,7 +97,7 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
       - PASSPHRASE=ithuan.tw
-      - echo ${PASSPHRASE} | gpg --import tests/gpg-key/ithuan.tw.asc
+      - echo ${PASSPHRASE} | gpg --import --batch tests/gpg-key/ithuan.tw.asc
       - GPG_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_KEY=${GPG_KEY}" | tee .env
       - docker-compose --file tests/docker-compose-backup-encrypt.yml up --detach
