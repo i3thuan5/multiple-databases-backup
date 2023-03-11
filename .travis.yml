@@ -100,7 +100,7 @@ jobs:
       - echo ${PASSPHRASE} | gpg --import --batch tests/gpg-key/ithuan.tw.asc
       - GPG_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_KEY=${GPG_KEY}" | tee .env
-      - docker-compose --file tests/docker-compose-backup-encrypt.yml up run --rm backup
+      - docker-compose --file tests/docker-compose-backup-encrypt.yml run --rm backup
       - export DATE=`date "+%Y-%m-%d"`
       - export TIME=`date "+%Y%m%dT%H%M"`
       - sleep 10
