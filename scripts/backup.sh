@@ -5,10 +5,13 @@ for postgres_container_name in `docker container list \
     --format "{{.Names}}" \
     --filter label=backup.postgres=true`
 do
-    ENCRYPT_COMMAND="gpg --encrypt --recipient-file ${GPG_KEY_PATH} -o - -"
-    OUTPUT_FILE_PATH="`date "+%Y-%m-%d"`/${postgres_container_name}_`date "+%Y%m%dT%H%M"`.sql.gz.gpg"
-    ENCRYPT_COMMAND="cat"
-    OUTPUT_FILE_PATH="`date "+%Y-%m-%d"`/${postgres_container_name}_`date "+%Y%m%dT%H%M"`.sql.gz"
+    if [ -z "${GPG_KEY:-}" ]; then
+      ENCRYPT_COMMAND="cat"
+      OUTPUT_FILE_PATH="`date "+%Y-%m-%d"`/${postgres_container_name}_`date "+%Y%m%dT%H%M"`.sql.gz"
+    else
+      ENCRYPT_COMMAND="gpg --encrypt --recipient-file ${GPG_KEY_PATH} -o - -"
+      OUTPUT_FILE_PATH="`date "+%Y-%m-%d"`/${postgres_container_name}_`date "+%Y%m%dT%H%M"`.sql.gz.gpg"
+    fi
     docker exec "${postgres_container_name}" pg_dump -U postgres \
       | gzip \
       | ${ENCRYPT_COMMAND} \
