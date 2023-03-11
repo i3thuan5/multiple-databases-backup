@@ -2,6 +2,8 @@
 set -euo pipefail
 
 >&2 echo 'multiple-databases-backup is starting, backup first.'
+export GPG_KEY_PATH=/app/gpg_key.rev
+>&2 echo ${GPG_KEY} | base64 -d  > ${GPG_KEY_PATH}
 bash /app/backup.sh
 if [ -z "${SCHEDULE:-}" ]; then
   >&2 echo "There is not SCHEDULE variable, backup once.";
