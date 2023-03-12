@@ -34,9 +34,10 @@ services:
       BACKUP_KEEP_MONTHS: 6  # Optional, not implemented yet
 ```
 
-## Reference
+## Environment Variables
 
-`GPG_PUBLIC_KEY`: base64 format of GPG public key for asymmetric encryptions
+### GPG_PUBLIC_KEY
+This optional environment variable is used for asymmetric encryptions. It is base64 format of GPG public key.
 
 1. [Generating a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if you don't have an existing GPG key.
 2. Get base64 format of GPG public key and save to `.env` env-file:
@@ -51,4 +52,3 @@ docker run --env-file .env ithuan/multiple-databases-backup
 ```
 
 The decryption command is `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`.
-  
