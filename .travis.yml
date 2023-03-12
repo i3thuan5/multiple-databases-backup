@@ -124,7 +124,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting backup exceeding 72 hours(3 days)
@@ -142,7 +142,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -161,7 +161,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -180,7 +180,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping day backups if they are backuped in different day.
@@ -203,7 +203,7 @@ jobs:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY2_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" postgres15-1.sql.gz
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${DAY2_BACKUP}" postgres15-2.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -227,7 +227,7 @@ jobs:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -246,7 +246,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -265,7 +265,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping month backups if they are backuped in different month.
@@ -288,7 +288,7 @@ jobs:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH1_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH2_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${MONTH1_BACKUP}" postgres15-1.sql.gz
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${MONTH2_BACKUP}" postgres15-2.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -316,7 +316,7 @@ jobs:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -335,7 +335,7 @@ jobs:
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
-      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
