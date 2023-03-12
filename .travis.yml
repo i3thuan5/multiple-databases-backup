@@ -120,11 +120,11 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set ${NOW}
+      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
-      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
-      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} postgres15.sql.gz
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting backup exceeding 72 hours
       env:
@@ -137,10 +137,10 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set ${NOW}
+      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
-      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
-      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
