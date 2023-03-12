@@ -29,8 +29,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
       - docker-compose --file tests/docker-compose-backup.yml up --detach
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - sleep 10
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
@@ -57,13 +57,13 @@ jobs:
       script:
       - docker-compose --file tests/docker-compose-backup-minute.yml up --detach
       - sleep 1m
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
       - sleep 1m
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup once when erasing the SCHEDULE variable
@@ -103,22 +103,24 @@ jobs:
       - GPG_PUBLIC_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" | tee tests/.env
       - docker-compose --file tests/docker-compose-backup-encrypt.yml run --rm backup
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - sleep 10
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz.gpg" postgres15.sql.gz.gpg
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
       - gpg --decrypt --batch --pinentry-mode loopback --passphrase-file ${GPG_PRIVATE_KEY_PASSPHRASE_PATH} postgres15.sql.gz.gpg | zcat
     - name: backup strategy for keeping backup in 72 hours(3 days)
-      env:
-      - NOW='2023-08-30 9:00'
-      - OLD_BACKUP="postgres15_postgres_1/2023-08-27/postgres15_postgres_1_20230827T1000.sql.gz"
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-strategy.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET=`date "+%Y-%m-%d" --date '3 days ago'`
+      - DATE=`date "+%Y-%m-%d" --date ${TARGET}`
+      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET}`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -126,15 +128,17 @@ jobs:
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting backup exceeding 72 hours(3 days)
-      env:
-      - NOW='2023-08-30 9:00'
-      - OLD_BACKUP="postgres15_postgres_1/2023-08-27/postgres15_postgres_1_20230827T0900.sql.gz"
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-strategy.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-%d" --date '3 days ago 1 hour ago'`
+      - DATE=`date "+%Y-%m-%d" --date ${TARGET}`
+      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET}`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -142,17 +146,18 @@ jobs:
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
-
     - name: backup strategy for keeping day backup in 90 days(3 months)
-      env:
-      - NOW='2023-08-30 9:00'
-      - OLD_BACKUP="postgres15_postgres_1/2023-06-01/postgres15_postgres_1_20230601T1000.sql.gz"
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-strategy.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m" --date '3 months ago'`-01
+      - DATE=`date "+%Y-%m-%d" --date ${TARGET}`
+      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET}`
+      - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -160,16 +165,21 @@ jobs:
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping day backups if they are backuped in different day.
-      env:
-      - NOW='2023-08-30 9:00'
-      - DAY1_BACKUP="postgres15_postgres_1/2023-06-01/postgres15_postgres_1_20230601T1000.sql.gz"
-      - DAY2_BACKUP="postgres15_postgres_1/2023-06-02/postgres15_postgres_1_20230602T1000.sql.gz"
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-strategy.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET1_TIME=`date "+%Y-%m" --date '3 months ago'`-01
+      - DATE1=`date "+%Y-%m-%d" --date ${TARGET1_TIME}`
+      - TIME1=`date "+%Y%m%dT%H%M" --date ${TARGET1_TIME}`
+      - DAY1_BACKUP="postgres15_postgres_1//${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - TARGET2_TIME=`date "+%Y-%m" --date '3 months ago'`-02
+      - DATE2=`date "+%Y-%m-%d" --date ${TARGET2_TIME}`
+      - TIME2=`date "+%Y%m%dT%H%M" --date ${TARGET2_TIME}`
+      - DAY1_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" --body test.sql.gz
@@ -198,15 +208,17 @@ jobs:
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting day backup exceeding 90 days(3 months)
-      env:
-      - NOW='2023-08-30 9:00'
-      - OLD_BACKUP="postgres15_postgres_1/2023-05-01/postgres15_postgres_1_20230501T0900.sql.gz"
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-strategy.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m" --date '4 months ago'`-01
+      - DATE=`date "+%Y-%m-%d" --date ${TARGET}`
+      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET}`
+      - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -215,6 +227,7 @@ jobs:
       - cat error.log | grep 'Not found.'
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping month backup in 36 months(3 years)
+      stage: not implemented yet
       env:
       - NOW='2023-08-30 9:00'
       - OLD_BACKUP="postgres15_postgres_1/2020-08-01/postgres15_postgres_1_20200801T1000.sql.gz"
