@@ -1,5 +1,6 @@
 # multiple-databases-backup
-Backup postgres, mariadb at the same time by docker one container.
+
+Backup database dockers at the same time by one backup container securely.
 
 [![Build Status](https://app.travis-ci.com/i3thuan5/multiple-databases-backup.svg?branch=main)](https://app.travis-ci.com/i3thuan5/multiple-databases-backup)
 [![GitHub](https://img.shields.io/github/license/i3thuan5/multiple-databases-backup)](https://github.com/i3thuan5/multiple-databases-backup/blob/main/LICENSE)
@@ -48,27 +49,27 @@ services:
 
 Backup the containers containing the labels together.
 
-### Configure Easily
+### Configuration Easily
 
 Only configuration is setting labels in database containers and setting storages and encryption variables in the backup container.
-
-### Support Remote Backup natively
-
-All backups are transfered to remote storage to keep availability. Related: [S3_ENDPOINT_URL](#S3_ENDPOINT_URL), [S3_REGION](#S3_REGION), [S3_BUCKET](#S3_BUCKET), [S3_ACCESS_KEY_ID](#S3_ACCESS_KEY_ID), [S3_SECRET_ACCESS_KEY](#S3_SECRET_ACCESS_KEY).
-
-### Support Backup Periodly and Backup once
-
-Using the crontab daemon to backup periodly is for operation daily. For emergency, backup container can backup immediately. Related: [SCHEDULE](#SCHEDULE).
 
 ### Production ready
 
 Compatiabily to docker compose, docker-swarm and k8s.
 
+### Supporting S3 Remote Backup natively
+
+All backups are transfered to S3-compatiable remote storage to keep availability. Related: [S3_ENDPOINT_URL](#S3_ENDPOINT_URL), [S3_REGION](#S3_REGION), [S3_BUCKET](#S3_BUCKET), [S3_ACCESS_KEY_ID](#S3_ACCESS_KEY_ID), [S3_SECRET_ACCESS_KEY](#S3_SECRET_ACCESS_KEY).
+
+### Supporting Backup Periodly and Backup once
+
+Using the crontab daemon to backup periodly is for operation daily. For emergency, backup container can backup immediately. Related: [SCHEDULE](#SCHEDULE).
+
 ### Security
 
-Preserves the confientiality and intgerity of backup process and backup files.
+Preserves the confientiality and intgerity of backup process and backup files. The backup process is built by shell pipeline, without leaving any temporary file in the disk. It also supports encrypting the backup files. Related: [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY).
 
-### Robust
+### Robustness
 
 Introducing to Continuous integration (CI) and dockerhub auto build to keep the backup script workable.
 
@@ -99,6 +100,7 @@ This environment variable is required for S3 secret access key, as a string.
 This optional environment variable is the backup schedule for backup. The format is crontab syntax containing settings for minute, hour, day of the month, month of the year and day of the week respectively. If this vairable is blank, the script will backup once and exit. The default value is ''.
 
 ### GPG_PUBLIC_KEY
+
 This optional environment variable is used for asymmetric encryptions. It is base64 format of GPG public key. The configuration steps are:
 
 1. [Generating a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if you don't have an existing GPG key.
