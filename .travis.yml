@@ -21,7 +21,7 @@ before_install:
 jobs:
   include:
     - name: backup once
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup.yml build
@@ -35,7 +35,7 @@ jobs:
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: starting message
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup.yml build
@@ -48,7 +48,7 @@ jobs:
       - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is finished, exiting.'
       - docker-compose --file tests/docker-compose-backup.yml logs
     - name: crontab
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
@@ -67,7 +67,7 @@ jobs:
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup once when erasing the SCHEDULE variable
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
@@ -77,7 +77,7 @@ jobs:
       - docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup | tee backup.log
       - cat backup.log | grep 'There is not SCHEDULE variable'
     - name: exit with SCHEDULE wrong format
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
@@ -92,7 +92,7 @@ jobs:
       env:
       - GPG_PRIVATE_KEY_PATH=tests/gpg-key/ithuan.tw.asc
       - GPG_PRIVATE_KEY_PASSPHRASE_PATH=tests/gpg-key/ithuan.tw.passphrase
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-encrypt.yml build
