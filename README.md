@@ -53,11 +53,11 @@ Backup the containers containing the labels together.
 
 Only configuration is setting labels in database containers and setting storages and encryption variables in the backup container.
 
-### Production ready
+### Production Ready
 
 Compatiabily to docker compose, docker-swarm and k8s.
 
-### Supporting S3 Remote Backup natively
+### Supporting S3 Remote Backup Natively
 
 All backups are transfered to S3-compatiable remote storage to keep availability. Related: [S3_ENDPOINT_URL](#S3_ENDPOINT_URL), [S3_REGION](#S3_REGION), [S3_BUCKET](#S3_BUCKET), [S3_ACCESS_KEY_ID](#S3_ACCESS_KEY_ID), [S3_SECRET_ACCESS_KEY](#S3_SECRET_ACCESS_KEY).
 
@@ -97,7 +97,7 @@ This environment variable is required for S3 secret access key, as a string.
 
 ### SCHEDULE
 
-This optional environment variable is the backup schedule for backup. The format is crontab syntax containing settings for minute, hour, day of the month, month of the year and day of the week respectively. If this vairable is blank, the script will backup once and exit. The default value is ''.
+This optional environment variable is the backup schedule for backup. The format is crontab syntax containing settings for minute, hour, day of the month, month of the year and day of the week respectively. If this vairable is blank, the script will backup once and exit. The default value is blank.
 
 ### GPG_PUBLIC_KEY
 
