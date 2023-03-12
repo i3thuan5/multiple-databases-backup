@@ -120,7 +120,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
@@ -137,7 +136,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
@@ -156,7 +154,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
@@ -174,7 +171,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY2_BACKUP}" --body test.sql.gz
@@ -194,7 +190,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" --body test.sql.gz
@@ -213,7 +208,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
@@ -231,7 +225,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
@@ -249,7 +242,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH1_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH2_BACKUP}" --body test.sql.gz
@@ -269,7 +261,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" --body test.sql.gz
@@ -288,7 +279,6 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - sudo date --set "${NOW}"
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup.yml run --rm backup
