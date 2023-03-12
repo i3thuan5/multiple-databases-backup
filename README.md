@@ -2,6 +2,7 @@
 Backup postgres, mariadb at the same time by docker one container.
 
 [![Build Status](https://app.travis-ci.com/i3thuan5/multiple-databases-backup.svg?branch=main)](https://app.travis-ci.com/i3thuan5/multiple-databases-backup)
+[![GitHub](https://img.shields.io/github/license/i3thuan5/multiple-databases-backup)](https://github.com/i3thuan5/multiple-databases-backup/blob/main/LICENSE)
 [![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/ithuan/multiple-databases-backup)](https://hub.docker.com/r/ithuan/multiple-databases-backup)
 [![Docker Image Size (tag)](https://img.shields.io/docker/image-size/ithuan/multiple-databases-backup/latest)](https://hub.docker.com/r/ithuan/multiple-databases-backup)
 [![Docker Stars](https://img.shields.io/docker/stars/ithuan/multiple-databases-backup)](https://hub.docker.com/r/ithuan/multiple-databases-backup)
