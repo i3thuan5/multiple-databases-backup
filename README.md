@@ -31,9 +31,9 @@ services:
     environment:
       S3_ENDPOINT_URL: https://domain.tw
       S3_REGION: region
+      S3_BUCKET: my-bucket
       S3_ACCESS_KEY_ID: key
       S3_SECRET_ACCESS_KEY: secret
-      S3_BUCKET: my-bucket
       SCHEDULE: "0 * * * *"  # Optional
       GPG_PUBLIC_KEY: ${GPG_PUBLIC_KEY:-}  # Optional
       BACKUP_KEEP_MINS: 1440  # Optional, not implemented yet
@@ -41,6 +41,36 @@ services:
       BACKUP_KEEP_WEEKS: 4  # Optional, not implemented yet
       BACKUP_KEEP_MONTHS: 6  # Optional, not implemented yet
 ```
+
+## Features
+
+### Backup Together
+
+Backup the containers containing the labels together.
+
+### Configure Easily
+
+Only configuration is setting labels in database containers and setting storages and encryption variables in the backup container.
+
+### Support Remote Backup natively
+
+All backups are transfered to remote storage to keep availability. Related: [S3_ENDPOINT_URL](#S3_ENDPOINT_URL), [S3_REGION](#S3_REGION), [S3_BUCKET](#S3_BUCKET), [S3_ACCESS_KEY_ID](#S3_ACCESS_KEY_ID), [S3_SECRET_ACCESS_KEY](#S3_SECRET_ACCESS_KEY).
+
+### Support Backup Periodly and Backup once
+
+Using the crontab daemon to backup periodly is for operation daily. For emergency, backup container can backup immediately. Related: [SCHEDULE](#SCHEDULE).
+
+### Production ready
+
+Compatiabily to docker compose, docker-swarm and k8s.
+
+### Security
+
+Preserves the confientiality and intgerity of backup process and backup files.
+
+### Robust
+
+Introducing to Continuous integration (CI) and dockerhub auto build to keep the backup script workable.
 
 ## Environment Variables
 
@@ -52,6 +82,10 @@ This environment variable is required for S3 URL when connecting to S3, includin
 
 This optional environment variable is the name of the S3 region to use. (eg. eu-west-1)
 
+### S3_BUCKET
+
+This environment variable is required for S3 storage bucket name, as a string.
+
 ### S3_ACCESS_KEY_ID
 
 This environment variable is required for S3 access key, as a string.
@@ -59,10 +93,6 @@ This environment variable is required for S3 access key, as a string.
 ### S3_SECRET_ACCESS_KEY
 
 This environment variable is required for S3 secret access key, as a string.
-
-### S3_BUCKET
-
-This environment variable is required for S3 storage bucket name, as a string.
 
 ### SCHEDULE
 
