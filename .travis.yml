@@ -89,6 +89,9 @@ jobs:
       - cat backup.log | grep 'The SCHEDULE variable should contain five fields exactly.'
       - cat error.log | grep 'The exit code is 1.'
     - name: GPG encrypt with asymmetric key
+      env:
+      - GPG_PRIVATE_KEY_PATH=tests/gpg-key/ithuan.tw.asc
+      - GPG_PRIVATE_KEY_PASSPHRASE=ithuan.tw
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -96,8 +99,7 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - PASSPHRASE=ithuan.tw
-      - echo ${PASSPHRASE} | gpg --import --batch tests/gpg-key/ithuan.tw.asc
+      - echo ${GPG_PRIVATE_KEY_PASSPHRASE} | gpg --import --batch ${GPG_PRIVATE_KEY}
       - GPG_PUBLIC_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" | tee tests/.env
       - docker-compose --file tests/docker-compose-backup-encrypt.yml run --rm backup
