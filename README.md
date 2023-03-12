@@ -1,6 +1,6 @@
 # multiple-databases-backup
 
-Backup database dockers at the same time by one backup container securely.
+Backup database dockers by one backup container securely.
 
 [![Build Status](https://app.travis-ci.com/i3thuan5/multiple-databases-backup.svg?branch=main)](https://app.travis-ci.com/i3thuan5/multiple-databases-backup)
 [![GitHub](https://img.shields.io/github/license/i3thuan5/multiple-databases-backup)](https://github.com/i3thuan5/multiple-databases-backup/blob/main/LICENSE)
