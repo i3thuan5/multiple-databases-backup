@@ -109,3 +109,38 @@ jobs:
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz.gpg" postgres15.sql.gz.gpg
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
       - gpg --decrypt --batch --pinentry-mode loopback --passphrase-file ${GPG_PRIVATE_KEY_PASSPHRASE_PATH} postgres15.sql.gz.gpg | zcat
+    - name: backup strategy for keeping backup in 72 hours
+      env:
+      - NOW='2023-08-30 9:00'
+      - OLD_BACKUP="postgres15_postgres_1/2023-08-27/postgres15_postgres_1_20230827T1000.sql.gz"
+      before_script:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      script:
+      - sudo date --set ${NOW}
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} test.sql.gz
+      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} postgres15.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for deleting backup exceeding 72 hours
+      env:
+      - NOW='2023-08-30 9:00'
+      - OLD_BACKUP="postgres15_postgres_1/2023-08-27/postgres15_postgres_1_20230827T0900.sql.gz"
+      before_script:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      script:
+      - sudo date --set ${NOW}
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} test.sql.gz
+      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key ${OLD_BACKUP} postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - cat error.log | grep 'Not found.'
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
