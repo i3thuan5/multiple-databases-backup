@@ -91,7 +91,7 @@ jobs:
     - name: GPG encrypt with asymmetric key
       env:
       - GPG_PRIVATE_KEY_PATH=tests/gpg-key/ithuan.tw.asc
-      - GPG_PRIVATE_KEY_PASSPHRASE=ithuan.tw
+      - GPG_PRIVATE_KEY_PASSPHRASE_PATH=tests/gpg-key/ithuan.tw.passphrase
       before_script:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -99,7 +99,7 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - echo ${GPG_PRIVATE_KEY_PASSPHRASE} | gpg --import --batch ${GPG_PRIVATE_KEY_PATH}
+      - gpg --import --batch ${GPG_PRIVATE_KEY_PATH}
       - GPG_PUBLIC_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" | tee tests/.env
       - docker-compose --file tests/docker-compose-backup-encrypt.yml run --rm backup
@@ -108,4 +108,4 @@ jobs:
       - sleep 10
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz.gpg" postgres15.sql.gz.gpg
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
-      - gpg --decrypt --batch --pinentry-mode loopback --passphrase ${GPG_PRIVATE_KEY_PASSPHRASE} postgres15.sql.gz.gpg | zcat
+      - gpg --decrypt --batch --pinentry-mode loopback --passphrase-file ${GPG_PRIVATE_KEY_PASSPHRASE_PATH} postgres15.sql.gz.gpg | zcat
