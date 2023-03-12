@@ -21,5 +21,5 @@ do
         AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}" \
         aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
         - "s3://${S3_BUCKET}/${postgres_container_name}/${OUTPUT_FILE_PATH}"
-    bash -x cleanup.sh "${postgres_container_name}" "${FILE_PATH}"
+    bash -x /app/cleanup.sh "${postgres_container_name}" "${FILE_PATH}"
 done
