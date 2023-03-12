@@ -10,7 +10,7 @@ services:
       S3_ACCESS_KEY_ID: test
       S3_SECRET_ACCESS_KEY: test
       S3_BUCKET: ${BUCKET_NAME:-backup-bucket}
-      GPG_KEY: ${GPG_KEY}
+      GPG_PUBLIC_KEY: ${GPG_PUBLIC_KEY}
     networks:
       s3_default:
 
