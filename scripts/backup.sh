@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+export AWS_DEFAULT_REGION="${S3_REGION}"
+export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID}"
+export AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}"
+
 for postgres_container_name in `docker container list \
     --format "{{.Names}}" \
     --filter label=backup.postgres=true`
@@ -16,10 +20,7 @@ do
     docker exec "${postgres_container_name}" pg_dump -U postgres \
       | gzip \
       | ${ENCRYPT_COMMAND} \
-      | AWS_DEFAULT_REGION="${S3_REGION}" \
-        AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID}" \
-        AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}" \
-        aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
+      | aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
         - "s3://${S3_BUCKET}/${postgres_container_name}/${OUTPUT_FILE_PATH}"
     bash -x /app/cleanup.sh "${postgres_container_name}" "${FILE_PATH}"
 done
