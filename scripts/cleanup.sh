@@ -29,7 +29,8 @@ aws s3api list-objects-v2 \
 
 for day in $(seq 1 "${KEEP_DAY_BACKUP_IN_DAYS}")
 do
-  FILE_PATH=$(filepath ${CONTAINER_NAME} "${day} days ago")
+  TARGET_DAY=`date "+%Y-%m-%d" --date "${day} days ago"`
+  FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
   aws s3api list-objects-v2 \
       --endpoint-url http://localstack:4566 \
       --bucket "${S3_BUCKET}" \
@@ -42,7 +43,8 @@ done
 
 for month in $(seq 1 "${KEEP_MONTH_BACKUP_IN_MONTHS}")
 do
-  FILE_PATH=$(filepath ${CONTAINER_NAME} "${month} months ago")
+  TARGET_DAY=`date "+%Y-%m-01" --date "${month} months ago"`
+  FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
   aws s3api list-objects-v2 \
       --endpoint-url http://localstack:4566 \
       --bucket "${S3_BUCKET}" \
