@@ -14,14 +14,14 @@ ALL_FILES=/all.list
 
 aws s3api list-objects-v2 \
     --endpoint-url http://localstack:4566 \
-    --bucket "${BUCKET_NAME}" \
+    --bucket "${S3_BUCKET}" \
     --prefix "${CONTAINER_NAME}" \
     --start-after "${FILE_PATH}" \
   | jq .Contents[].Key
   > "${PRESERVE_FILES}"
 aws s3api list-objects-v2 \
     --endpoint-url http://localstack:4566 \
-    --bucket "${BUCKET_NAME}" \
+    --bucket "${S3_BUCKET}" \
     --prefix "${CONTAINER_NAME}" \
   | jq .Contents[].Key
   > "${ALL_FILES}"
@@ -30,6 +30,6 @@ for filename in `cat "${ALL_FILES}" | grep -v --file "${PRESERVE_FILES}"`
 do
   aws s3api delete-object \
     --endpoint-url http://localstack:4566 \
-    --bucket "${BUCKET_NAME}" \
+    --bucket "${S3_BUCKET}" \
     --key filename
 done
