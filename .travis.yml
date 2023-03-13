@@ -176,7 +176,7 @@ jobs:
       - TARGET_TIME=`date "+%Y-%m" --date '3 months ago'`-01
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
-      - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -194,11 +194,11 @@ jobs:
       - TARGET1_TIME=`date "+%Y-%m" --date '3 months ago'`-01
       - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
       - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
-      - DAY1_BACKUP="postgres15_postgres_1//${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - DAY1_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
       - TARGET2_TIME=`date "+%Y-%m" --date '3 months ago'`-02
       - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
       - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
-      - DAY2_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      - DAY2_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" --body test.sql.gz
@@ -218,11 +218,11 @@ jobs:
       - TARGET1_TIME="`date "+%Y-%m" --date '3 months ago'`-01 09:00"
       - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
       - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
-      - DAY_BACKUP="postgres15_postgres_1//${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - DAY_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
       - TARGET2_TIME="`date "+%Y-%m" --date '3 months ago'`-01 10:00"
       - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
       - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
-      - NOT_DAY_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      - NOT_DAY_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
@@ -242,7 +242,7 @@ jobs:
       - TARGET_TIME=`date "+%Y-%m" --date '4 months ago'`-01
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
-      - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -261,7 +261,7 @@ jobs:
       - TARGET_TIME=`date "+%Y-%m" --date '3 years ago'`-01
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
-      - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
@@ -279,11 +279,11 @@ jobs:
       - TARGET1_TIME=`date "+%Y" --date '1 years ago'`-01-01
       - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
       - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
-      - MONTH1_BACKUP="postgres15_postgres_1//${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - MONTH1_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
       - TARGET2_TIME=`date "+%Y" --date '1 years ago'`-02-02
       - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
       - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
-      - MONTH2_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      - MONTH2_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH1_BACKUP}" --body test.sql.gz
@@ -307,11 +307,11 @@ jobs:
       - TARGET1_TIME="`date "+%Y-%m" --date '3 months ago'`-01 09:00"
       - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
       - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
-      - MONTH_BACKUP="postgres15_postgres_1//${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - MONTH_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
       - TARGET2_TIME="`date "+%Y-%m" --date '3 months ago'`-20 09:00"
       - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
       - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
-      - NOT_MONTH_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      - NOT_MONTH_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
@@ -331,7 +331,7 @@ jobs:
       - TARGET_TIME=`date "+%Y-%m" --date '3 years ago 1 months ago'`-01
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
-      - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
