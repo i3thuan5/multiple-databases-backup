@@ -15,16 +15,14 @@ RUN apt update && \
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
     $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
   apt-get update && \
-  apt install -y docker-ce-cli
+  apt install -y docker-ce-cli jq gnupg
 
-RUN   apt install -y unzip
-RUN mkdir /aws_build/ && \
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/aws_build/awscliv2.zip"
-RUN \
+RUN apt install -y unzip && \
+  mkdir /aws_build/ && \
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
   /aws_build//aws/install && \
   rm -rf /aws_build/
-RUN   apt install -y jq
 
 COPY scripts/ /app/
 
