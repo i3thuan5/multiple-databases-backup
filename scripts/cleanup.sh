@@ -1,13 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+source /app/filepath.sh
+
 KEEP_EVERY_BACKUP_IN_HOURS=${KEEP_EVERY_BACKUP_IN_HOURS:-72}
 
 CONTAINER_NAME=$1
 
-DATE=`date "+%Y-%m-%d" --date "${KEEP_EVERY_BACKUP_IN_HOURS} hours ago"`
-TIME=`date "+%Y%m%dT%H%M" --date "${KEEP_EVERY_BACKUP_IN_HOURS} hours ago"`
-FILE_PATH="${DATE}/${CONTAINER_NAME}_${TIME}"
+FILE_PATH=$(filepath ${postgres_container_name} "${KEEP_EVERY_BACKUP_IN_HOURS} hours ago"`)
 
 PRESERVE_FILES=/preserves.list
 ALL_FILES=/all.list
