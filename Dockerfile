@@ -5,4 +5,6 @@ RUN yum update -y && \
   yum install -y jq
 
 COPY scripts/ /app/
+ENTRYPOINT ["/bin/bash"]
+
 CMD bash /app/start.sh
