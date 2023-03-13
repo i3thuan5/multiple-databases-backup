@@ -17,6 +17,15 @@ RUN apt update && \
   apt-get update && \
   apt install -y docker-ce-cli
 
+RUN   apt install -y unzip
+RUN mkdir /aws_build/ && \
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/aws_build/awscliv2.zip"
+RUN \
+  unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
+  /aws_build//aws/install && \
+  rm -rf /aws_build/
+RUN   apt install -y jq
+
 COPY scripts/ /app/
 
 CMD bash /app/start.sh
