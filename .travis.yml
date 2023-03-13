@@ -139,8 +139,13 @@ jobs:
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - DAY_TARGET_TIME=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - DAY_DATE=`date "+%Y-%m-%d" --date "${DAY_TARGET_TIME}"`
+      - DAY_TIME=`date "+%Y%m%dT%H%M" --date "${DAY_TARGET_TIME}"`
+      - DAY_BACKUP="postgres15_postgres_1/${DAY_DATE}/postgres15_postgres_1_${DAY_TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
@@ -239,12 +244,17 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
-      - TARGET_TIME=`date "+%Y-%m" --date '4 months ago'`-01
+      - TARGET_TIME=`date "+%Y-%m-10" --date '5 months ago'`
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - MONTH_TARGET_TIME=`date "+%Y-%m-01" --date "${TARGET_TIME}"`
+      - MONTH_DATE=`date "+%Y-%m-%d" --date "${MONTH_TARGET_TIME}"`
+      - MONTH_TIME=`date "+%Y%m%dT%H%M" --date "${MONTH_TARGET_TIME}"`
+      - MONTH_BACKUP="postgres15_postgres_1/${MONTH_DATE}/postgres15_postgres_1_${MONTH_TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
       - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
