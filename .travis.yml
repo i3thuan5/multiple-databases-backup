@@ -198,7 +198,7 @@ jobs:
       - TARGET2_TIME=`date "+%Y-%m" --date '3 months ago'`-02
       - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
       - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
-      - DAY1_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      - DAY2_BACKUP="postgres15_postgres_1//${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
       - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" --body test.sql.gz
