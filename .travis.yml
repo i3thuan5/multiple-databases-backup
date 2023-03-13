@@ -117,7 +117,7 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
-      - TARGET_TIME=`date "+%Y-%m-%d" --date '3 days ago'`
+      - TARGET_TIME=`date "+%Y-%m-%d %H:%M" --date '3 days ago'`
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
@@ -135,7 +135,7 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
-      - TARGET_TIME=`date "+%Y-%m-%d" --date '3 days ago 1 hour ago'`
+      - TARGET_TIME=`date "+%Y-%m-%d %H:%M" --date '3 days ago 1 hour ago'`
       - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
       - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
