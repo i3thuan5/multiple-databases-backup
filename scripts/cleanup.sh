@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+KEEP_EVERY_BACKUP_IN_HOURS=${KEEP_EVERY_BACKUP_IN_HOURS:-72}
+
 CONTAINER_NAME=$1
 
 DATE=`date "+%Y-%m-%d" --date "${KEEP_EVERY_BACKUP_IN_HOURS} days ago"`
