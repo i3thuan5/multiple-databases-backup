@@ -3,8 +3,8 @@ set -euo pipefail
 
 CONTAINER_NAME=$1
 
-DATE=`date "+%Y-%m-%d" --date "${KEEP_EVERY_BACKUP_IN_HOURS} days ago"
-TIME=`date "+%Y%m%dT%H%M" --date "${KEEP_EVERY_BACKUP_IN_HOURS} days ago"
+DATE=`date "+%Y-%m-%d" --date "${KEEP_EVERY_BACKUP_IN_HOURS} days ago"`
+TIME=`date "+%Y%m%dT%H%M" --date "${KEEP_EVERY_BACKUP_IN_HOURS} days ago"`
 FILE_PATH="${DATE}/${CONTAINER_NAME}_${TIME}"
 
 PRESERVE_FILES=/preserves.list
