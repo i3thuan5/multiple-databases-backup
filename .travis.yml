@@ -118,8 +118,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m-%d" --date '3 days ago'`
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
@@ -136,8 +136,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m-%d" --date '3 days ago 1 hour ago'`
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
@@ -155,8 +155,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m-%d" --date '3 days'`
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
@@ -174,8 +174,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m" --date '3 months ago'`-01
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
@@ -240,8 +240,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m" --date '4 months ago'`-01
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
@@ -259,8 +259,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m" --date '3 years ago'`-01
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
@@ -329,8 +329,8 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
       - TARGET_TIME=`date "+%Y-%m" --date '3 years ago 1 months ago'`-01
-      - DATE=`date "+%Y-%m-%d" --date ${TARGET_TIME}`
-      - TIME=`date "+%Y%m%dT%H%M" --date ${TARGET_TIME}`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
       - OLD_BACKUP="postgres15_postgres_1//${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
       script:
       - echo '# SQL' | gzip > test.sql.gz
