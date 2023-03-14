@@ -32,11 +32,9 @@ do
   >&2 echo "Backuping ${postgres_container_name} is finished."
 done
 
-if [ "$1" != '--no-cleanup' ]; then
-  for postgres_container_name in $all_containers
-  do
-    >&2 echo "Cleaning the ${postgres_container_name} old backup is starting."
-    bash -x /app/cleanup.sh "${postgres_container_name}"
-    >&2 echo "Cleaning the ${postgres_container_name} old backup is finished."
-  done
-fi
+for postgres_container_name in $all_containers
+do
+  >&2 echo "Cleaning the ${postgres_container_name} old backup is starting."
+  bash -x /app/cleanup.sh "${postgres_container_name}"
+  >&2 echo "Cleaning the ${postgres_container_name} old backup is finished."
+done
