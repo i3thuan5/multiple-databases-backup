@@ -2,6 +2,13 @@
 set -euo pipefail
 
 >&2 echo 'multiple-databases-backup is starting, backup first.'
+export GPG_PUBLIC_KEY_PATH=/app/GPG_PUBLIC_KEY.rev
+if [ -z "${GPG_PUBLIC_KEY:-}" ]; then
+  >&2 echo 'There is not a GPG_PUBLIC_KEY, all backup files will not be encrypted.'
+else
+  >&2 echo 'There is the GPG_PUBLIC_KEY, all backup files will be encrypted.'
+  echo ${GPG_PUBLIC_KEY} | base64 -d  > ${GPG_PUBLIC_KEY_PATH}
+fi
 bash /app/backup.sh
 if [ -z "${SCHEDULE:-}" ]; then
   >&2 echo "There is not SCHEDULE variable, backup once.";
