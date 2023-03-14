@@ -35,6 +35,6 @@ done
 for postgres_container_name in $all_containers
 do
   >&2 echo "Cleaning the ${postgres_container_name} old backup is starting."
-  bash -x /app/cleanup.sh "${postgres_container_name}"
+  bash /app/cleanup.sh "${postgres_container_name}"
   >&2 echo "Cleaning the ${postgres_container_name} old backup is finished."
 done
