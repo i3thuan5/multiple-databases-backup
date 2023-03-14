@@ -29,9 +29,10 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
       - docker-compose --file tests/docker-compose-backup.yml up --detach
+      - export DATE=`date "+%Y-%m-%d"`
       - export TIME=`date "+%Y%m%dT%H%M"`
       - sleep 10
-      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: starting message
       before_script:
@@ -56,12 +57,14 @@ jobs:
       script:
       - docker-compose --file tests/docker-compose-backup-minute.yml up --detach
       - sleep 1m
+      - export DATE=`date "+%Y-%m-%d"`
       - export TIME=`date "+%Y%m%dT%H%M"`
-      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
       - sleep 1m
+      - export DATE=`date "+%Y-%m-%d"`
       - export TIME=`date "+%Y%m%dT%H%M"`
-      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup once when erasing the SCHEDULE variable
       before_script:
