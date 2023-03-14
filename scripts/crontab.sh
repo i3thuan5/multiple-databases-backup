@@ -2,4 +2,4 @@
 set -euo pipefail
 
 echo "${SCHEDULE} sh /app/backup.sh" | crontab -
-cron -f
+cron -f -L 15
