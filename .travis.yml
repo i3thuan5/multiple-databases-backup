@@ -42,7 +42,7 @@ jobs:
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - docker-compose --file tests/docker-compose-backup.yml up --detach
+      - docker-compose --file tests/docker-compose-backup.yml run --rm backup
       - sleep 10
       - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is starting, backup first.'
       - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is finished, exiting.'
