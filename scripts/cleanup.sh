@@ -7,8 +7,9 @@ CONTAINER_NAME=$1
 
 FILE_PATH=$(filepath ${CONTAINER_NAME} "${KEEP_EVERY_BACKUP_IN_HOURS} hours ago")
 
-ALL_FILES=/all.list
-PRESERVE_FILES=/preserves.list
+temp_dir=$(mktemp -d)
+ALL_FILES="${temp_dir}/all.list"
+PRESERVE_FILES="${temp_dir}/preserves.list"
 
 aws s3api list-objects-v2 \
     --endpoint-url http://localstack:4566 \
@@ -62,3 +63,5 @@ do
     --bucket "${S3_BUCKET}" \
     --key ${filename}
 done
+
+rm -rf "${temp_dir}"
