@@ -7,7 +7,7 @@ export AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}"
 
 source /app/filepath.sh
 
-if [ -z "${GPG_PUBLIC_KEY:-}" ]; then
+if [ -z "${GPG_PUBLIC_KEY}" ]; then
   ENCRYPT_COMMAND="cat"
   FILE_TYPE="sql.gz"
 else

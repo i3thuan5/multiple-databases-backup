@@ -3,8 +3,6 @@ set -euo pipefail
 
 source /app/filepath.sh
 
-KEEP_EVERY_BACKUP_IN_HOURS=${KEEP_EVERY_BACKUP_IN_HOURS:-72}
-
 CONTAINER_NAME=$1
 
 FILE_PATH=$(filepath ${CONTAINER_NAME} "${KEEP_EVERY_BACKUP_IN_HOURS} hours ago")
