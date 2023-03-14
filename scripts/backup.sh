@@ -22,11 +22,19 @@ all_containers=`docker container list \
 
 for postgres_container_name in $all_containers
 do
-    FILE_PATH=$(filepath ${postgres_container_name} 'now')
-    docker exec "${postgres_container_name}" pg_dump -U postgres \
-      | gzip \
-      | ${ENCRYPT_COMMAND} \
-      | aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
-        - "s3://${S3_BUCKET}/${FILE_PATH}.${FILE_TYPE}"
-    bash -x /app/cleanup.sh "${postgres_container_name}"
+  >&2 echo "Backuping ${postgres_container_name} is starting."
+  FILE_PATH=$(filepath ${postgres_container_name} 'now')
+  docker exec "${postgres_container_name}" pg_dump -U postgres \
+    | gzip \
+    | ${ENCRYPT_COMMAND} \
+    | aws s3 cp --endpoint-url "${S3_ENDPOINT_URL}" \
+      - "s3://${S3_BUCKET}/${FILE_PATH}.${FILE_TYPE}"
+  >&2 echo "Backuping ${postgres_container_name} is finished."
+done
+
+for postgres_container_name in $all_containers
+do
+  >&2 echo "Cleaning the ${postgres_container_name} old backup is starting."
+  bash -x /app/cleanup.sh "${postgres_container_name}"
+  >&2 echo "Cleaning the ${postgres_container_name} old backup is finished."
 done
