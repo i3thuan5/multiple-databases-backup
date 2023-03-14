@@ -66,6 +66,8 @@ jobs:
       - TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+      - docker-compose --file tests/docker-compose-backup-minute.yml exec backup cat /var/log/cron.log
+      - docker-compose --file tests/docker-compose-backup-minute.yml exec backup cat /var/log/cron.error.log
     - name: backup once when erasing the SCHEDULE variable
       install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
