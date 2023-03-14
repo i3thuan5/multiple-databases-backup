@@ -44,7 +44,7 @@ jobs:
       script:
       - docker-compose --file tests/docker-compose-backup.yml up --detach
       - sleep 3m
-      - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is starting,'
+      - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is starting.'
       - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is finished, exiting.'
       - docker-compose --file tests/docker-compose-backup.yml logs
     - name: crontab
