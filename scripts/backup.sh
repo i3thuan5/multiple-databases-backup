@@ -15,9 +15,12 @@ else
   FILE_TYPE="sql.gz.gpg"
 fi
 
-for postgres_container_name in `docker container list \
+all_containers=`docker container list \
     --format "{{.Names}}" \
-    --filter label=backup.postgres=true`
+    --filter label=backup.postgres=true \
+  | sort`
+
+for postgres_container_name in $all_containers
 do
     FILE_PATH=$(filepath ${postgres_container_name} 'now')
     docker exec "${postgres_container_name}" pg_dump -U postgres \
