@@ -21,7 +21,7 @@ RUN apt install -y unzip && \
   mkdir /aws_build/ && \
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
-  /aws_build//aws/install && \
+  /aws_build/aws/install && \
   rm -rf /aws_build/
 
 COPY scripts/ /app/
