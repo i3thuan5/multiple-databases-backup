@@ -117,10 +117,14 @@ Or pass the varivable to `docker`:
 ```bash
 docker run --env-file .env ithuan/multiple-databases-backup
 ```
+4. Export the private key and save it safely:
+```bash
+gpg --export-secret-keys --armor <GPG key ID> > <gpg-private-key.asc>
+```
 
 The decryption command is:
 
-1. Import the gpg private key if you didn't import, `gpg --import <gpg-private-key.rev>`.
+1. Import the gpg private key if you didn't import, `gpg --import <gpg-private-key.asc>`.
 2. Decrypt the backups, `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
 
 ### KEEP_EVERY_BACKUP_IN_HOURS
