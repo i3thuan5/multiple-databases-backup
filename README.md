@@ -37,10 +37,9 @@ services:
       S3_SECRET_ACCESS_KEY: secret
       SCHEDULE: "0 * * * *"  # Optional
       GPG_PUBLIC_KEY: ${GPG_PUBLIC_KEY:-}  # Optional
-      BACKUP_KEEP_MINS: 1440  # Optional, not implemented yet
-      BACKUP_KEEP_DAYS: 7  # Optional, not implemented yet
-      BACKUP_KEEP_WEEKS: 4  # Optional, not implemented yet
-      BACKUP_KEEP_MONTHS: 6  # Optional, not implemented yet
+      KEEP_EVERY_BACKUP_IN_HOURS: 72  # Optional
+      KEEP_DAY_BACKUP_IN_DAYS: 90  # Optional
+      KEEP_MONTH_BACKUP_IN_MONTHS: 36  # Optional
 ```
 
 ## Features
@@ -116,3 +115,15 @@ docker run --env-file .env ithuan/multiple-databases-backup
 ```
 
 The decryption command is `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
+
+### KEEP_EVERY_BACKUP_IN_HOURS
+
+This optional environment variable is used for keeping backup files recently. The default value is 72.
+
+### KEEP_DAY_BACKUP_IN_DAYS
+
+The default value is 90.
+
+### KEEP_MONTH_BACKUP_IN_MONTHS
+
+The default value is 36.
