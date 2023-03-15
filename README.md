@@ -165,6 +165,7 @@ services:
       KEEP_EVERY_BACKUP_IN_HOURS:
       KEEP_DAY_BACKUP_IN_DAYS:
       KEEP_MONTH_BACKUP_IN_MONTHS:
+    restart: always
 ```
 
 #### .env
