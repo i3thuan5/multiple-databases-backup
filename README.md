@@ -54,7 +54,7 @@ Only configuration is setting labels in database containers and setting storages
 
 ### Production Ready
 
-Compatiabily to docker compose, docker-swarm and k8s.
+Compatiabily to docker-compose, docker-swarm and k8s.
 
 ### Supporting S3 Remote Backup Natively
 
@@ -134,3 +134,47 @@ This optional environment variable is how many daily backups kept. The default v
 ### KEEP_MONTH_BACKUP_IN_MONTHS
 
 This optional environment variable is how many monthly backups kept. The default value is `36`. It means 36 months, 3 years.
+
+## Examples
+
+### docker-compose
+
+Keep `docker-compose.yml` simple and set the variables in `.env`.
+
+#### docker-compose.yml
+
+```
+version: '3'
+services:
+  backup:
+    image: ithuan/multiple-databases-backup
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      S3_ENDPOINT_URL:
+      S3_REGION:
+      S3_BUCKET:
+      S3_ACCESS_KEY_ID:
+      S3_SECRET_ACCESS_KEY:
+      SCHEDULE:
+      GPG_PUBLIC_KEY:
+      KEEP_EVERY_BACKUP_IN_HOURS:
+      KEEP_DAY_BACKUP_IN_DAYS:
+      KEEP_MONTH_BACKUP_IN_MONTHS:
+```
+
+#### .env
+
+The variables below are configurable. [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY) variables should be set by manually.
+```
+S3_ENDPOINT_URL=
+S3_REGION=
+S3_BUCKET=
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+SCHEDULE='0 * * * *'  # Backuping every hour
+GPG_PUBLIC_KEY=
+KEEP_EVERY_BACKUP_IN_HOURS=72  # 72 hours, 3 days
+KEEP_DAY_BACKUP_IN_DAYS=90  # 90 days, 3 months.
+KEEP_MONTH_BACKUP_IN_MONTHS=36  # 36 months, 3 years
+```
