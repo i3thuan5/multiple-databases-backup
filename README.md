@@ -118,7 +118,10 @@ Or pass the varivable to `docker`:
 docker run --env-file .env ithuan/multiple-databases-backup
 ```
 
-The decryption command is `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
+The decryption command is:
+
+1. Import the gpg private key if you didn't import, `gpg --import <gpg-private-key.rev>`.
+2. Decrypt the backups, `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
 
 ### KEEP_EVERY_BACKUP_IN_HOURS
 
