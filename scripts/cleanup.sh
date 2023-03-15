@@ -12,14 +12,14 @@ ALL_FILES="${temp_dir}/all.list"
 PRESERVE_FILES="${temp_dir}/preserves.list"
 
 aws s3api list-objects-v2 \
-    --endpoint-url http://localstack:4566 \
+    --endpoint-url "${S3_ENDPOINT_URL}" \
     --bucket "${S3_BUCKET}" \
     --prefix "${CONTAINER_NAME}" \
   | jq .Contents[].Key \
   > "${ALL_FILES}"
 
 aws s3api list-objects-v2 \
-    --endpoint-url http://localstack:4566 \
+    --endpoint-url "${S3_ENDPOINT_URL}" \
     --bucket "${S3_BUCKET}" \
     --prefix "${CONTAINER_NAME}" \
     --start-after "${FILE_PATH}" \
@@ -31,7 +31,7 @@ do
   TARGET_DAY=`date "+%Y-%m-%d" --date "${day} days ago"`
   FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
   aws s3api list-objects-v2 \
-      --endpoint-url http://localstack:4566 \
+      --endpoint-url "${S3_ENDPOINT_URL}" \
       --bucket "${S3_BUCKET}" \
       --prefix "${CONTAINER_NAME}" \
       --start-after "${FILE_PATH}" \
@@ -45,7 +45,7 @@ do
   TARGET_DAY=`date "+%Y-%m-01" --date "${month} months ago"`
   FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
   aws s3api list-objects-v2 \
-      --endpoint-url http://localstack:4566 \
+      --endpoint-url "${S3_ENDPOINT_URL}" \
       --bucket "${S3_BUCKET}" \
       --prefix "${CONTAINER_NAME}" \
       --start-after "${FILE_PATH}" \
@@ -59,7 +59,7 @@ for filename in `cat "${ALL_FILES}" \
   | sed 's/^"\(.*\)"$/\1/g'`
 do
   aws s3api delete-object \
-    --endpoint-url http://localstack:4566 \
+    --endpoint-url "${S3_ENDPOINT_URL}" \
     --bucket "${S3_BUCKET}" \
     --key ${filename}
 done
