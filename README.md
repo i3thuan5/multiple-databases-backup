@@ -64,6 +64,10 @@ All backups are transfered to S3-compatiable remote storage to keep availability
 
 Using the crontab daemon to backup periodly is for operation daily. For emergency, backup container can backup immediately. Related: [SCHEDULE](#SCHEDULE).
 
+### Cleanuping Old Backup Files for Comprehensive Strategy
+
+After backuping, the containers will cleanup old backups. The cleanuping deletes all backups except for recently backups, daily backups and monthly backups. The keeping startegy can be configured. Related: [KEEP_EVERY_BACKUP_IN_HOURS](#KEEP_EVERY_BACKUP_IN_HOURS), [KEEP_DAY_BACKUP_IN_DAYS](#KEEP_DAY_BACKUP_IN_DAYS), [KEEP_MONTH_BACKUP_IN_MONTHS](#KEEP_MONTH_BACKUP_IN_MONTHS).
+
 ### Security
 
 Preserves the confientiality and intgerity of backup process and backup files. The backup process is built by shell pipeline, without leaving any temporary file in the disk. It also supports encrypting the backup files. Related: [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY).
