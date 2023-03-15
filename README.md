@@ -122,12 +122,12 @@ The decryption command is `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the ou
 
 ### KEEP_EVERY_BACKUP_IN_HOURS
 
-This optional environment variable is used for keeping backup files recently. The default value is 72.
+This optional environment variable is how old backups kept. The default value is `72`. It means 72 hours, 3 days.
 
 ### KEEP_DAY_BACKUP_IN_DAYS
 
-The default value is 90.
+This optional environment variable is how many daily backups kept. The default value is `90`. It means 90 days, 3 months.
 
 ### KEEP_MONTH_BACKUP_IN_MONTHS
 
-The default value is 36.
+This optional environment variable is how many monthly backups kept. The default value is `36`. It means 36 months, 3 years.
