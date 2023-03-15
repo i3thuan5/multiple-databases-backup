@@ -54,7 +54,7 @@ Only configuration is setting labels in database containers and setting storages
 
 ### Production Ready
 
-Compatiabily to docker-compose, docker-swarm and k8s.
+Compatiabily to [docker-compose](#docker-compose), docker-swarm and k8s.
 
 ### Supporting S3 Remote Backup Natively
 
@@ -166,6 +166,7 @@ services:
 #### .env
 
 The variables below are configurable. [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY) variables should be set by manually.
+
 ```
 S3_ENDPOINT_URL=
 S3_REGION=
@@ -178,3 +179,7 @@ KEEP_EVERY_BACKUP_IN_HOURS=72  # 72 hours, 3 days
 KEEP_DAY_BACKUP_IN_DAYS=90  # 90 days, 3 months.
 KEEP_MONTH_BACKUP_IN_MONTHS=36  # 36 months, 3 years
 ```
+
+### Kubernetes(K8s)
+
+The containers can backup periodly by [Kubernetes CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/).
