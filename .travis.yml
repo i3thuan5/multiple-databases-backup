@@ -13,15 +13,15 @@ env:
 branches:
   only:
   - main
-install:
+before_install:
 - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-- unzip awscliv2.zip
+- unzip -q awscliv2.zip
 - sudo ./aws/install
 - pip install awscli-local
 jobs:
   include:
     - name: backup once
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup.yml build
@@ -29,26 +29,25 @@ jobs:
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
       - docker-compose --file tests/docker-compose-backup.yml up --detach
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - sleep 10
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: starting message
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup.yml build
       - sleep 10
       - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-      - docker-compose --file tests/docker-compose-backup.yml up --detach
-      - sleep 10
-      - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is starting, backup first.'
-      - docker-compose --file tests/docker-compose-backup.yml logs | grep 'multiple-databases-backup is finished, exiting.'
-      - docker-compose --file tests/docker-compose-backup.yml logs
+      - docker-compose --file tests/docker-compose-backup.yml run --rm backup | tee backup.log
+      - cat backup.log | grep 'multiple-databases-backup is starting.'
+      - cat backup.log | grep 'multiple-databases-backup is finished, exiting.'
+      - cat backup.log
     - name: crontab
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
@@ -57,17 +56,19 @@ jobs:
       script:
       - docker-compose --file tests/docker-compose-backup-minute.yml up --detach
       - sleep 1m
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
       - sleep 1m
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+      - docker-compose --file tests/docker-compose-backup-minute.yml exec backup cat /var/log/cron.log
+      - docker-compose --file tests/docker-compose-backup-minute.yml exec backup cat /var/log/cron.error.log
     - name: backup once when erasing the SCHEDULE variable
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
@@ -77,7 +78,7 @@ jobs:
       - docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup | tee backup.log
       - cat backup.log | grep 'There is not SCHEDULE variable'
     - name: exit with SCHEDULE wrong format
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-minute.yml build
@@ -92,7 +93,7 @@ jobs:
       env:
       - GPG_PRIVATE_KEY_PATH=tests/gpg-key/ithuan.tw.asc
       - GPG_PRIVATE_KEY_PASSPHRASE_PATH=tests/gpg-key/ithuan.tw.passphrase
-      before_script:
+      install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
       - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
       - docker-compose --file tests/docker-compose-backup-encrypt.yml build
@@ -102,10 +103,227 @@ jobs:
       - gpg --import --batch ${GPG_PRIVATE_KEY_PATH}
       - GPG_PUBLIC_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
       - echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" | tee tests/.env
+      - DATE=`date "+%Y-%m-%d"`
+      - TIME=`date "+%Y%m%dT%H%M"`
       - docker-compose --file tests/docker-compose-backup-encrypt.yml run --rm backup
-      - export DATE=`date "+%Y-%m-%d"`
-      - export TIME=`date "+%Y%m%dT%H%M"`
       - sleep 10
       - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz.gpg" postgres15.sql.gz.gpg
       - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
       - gpg --decrypt --batch --pinentry-mode loopback --passphrase-file ${GPG_PRIVATE_KEY_PASSPHRASE_PATH} postgres15.sql.gz.gpg | zcat
+    - name: backup strategy for keeping backup in 72 hours(3 days)
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-%d %H:%M" --date '3 days ago'`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for deleting backup exceeding 72 hours(3 days)
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-%d %H:%M" --date '3 days ago 1 hour ago'`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - DAY_TARGET_TIME=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - DAY_DATE=`date "+%Y-%m-%d" --date "${DAY_TARGET_TIME}"`
+      - DAY_TIME=`date "+%Y%m%dT%H%M" --date "${DAY_TARGET_TIME}"`
+      - DAY_BACKUP="postgres15_postgres_1/${DAY_DATE}/postgres15_postgres_1_${DAY_TIME}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - cat error.log | grep 'Not found.'
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for keeping day backup in 90 days(3 months)
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-01" --date '3 months ago'`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for keeping day backups if they are backuped in different day.
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET1_TIME=`date "+%Y-%m-01" --date '2 months ago'`
+      - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
+      - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
+      - DAY1_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - TARGET2_TIME=`date "+%Y-%m-02" --date '2 months ago'`
+      - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
+      - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
+      - DAY2_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" --body test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY2_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${DAY1_BACKUP}" postgres15-1.sql.gz
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${DAY2_BACKUP}" postgres15-2.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for deleting backup because of keeping day backup only
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET1_TIME="`date "+%Y-%m-01 09:00" --date '3 months ago'`"
+      - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
+      - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
+      - DAY_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - TARGET2_TIME="`date "+%Y-%m-01 10:00" --date '3 months ago'`"
+      - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
+      - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
+      - NOT_DAY_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - cat error.log | grep 'Not found.'
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for deleting day backup exceeding 90 days(3 months)
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-10" --date '5 months ago'`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      - MONTH_TARGET_TIME=`date "+%Y-%m-01" --date "${TARGET_TIME}"`
+      - MONTH_DATE=`date "+%Y-%m-%d" --date "${MONTH_TARGET_TIME}"`
+      - MONTH_TIME=`date "+%Y%m%dT%H%M" --date "${MONTH_TARGET_TIME}"`
+      - MONTH_BACKUP="postgres15_postgres_1/${MONTH_DATE}/postgres15_postgres_1_${MONTH_TIME}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - cat error.log | grep 'Not found.'
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for keeping month backup in 36 months(3 years)
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-01" --date '3 years ago'`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for keeping month backups if they are backuped in different month.
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET1_TIME=`date "+%Y-01-01" --date '1 years ago'`
+      - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
+      - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
+      - MONTH1_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - TARGET2_TIME=`date "+%Y-02-02" --date '1 years ago'`
+      - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
+      - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
+      - MONTH2_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH1_BACKUP}" --body test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH2_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${MONTH1_BACKUP}" postgres15-1.sql.gz
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${MONTH2_BACKUP}" postgres15-2.sql.gz
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for deleting backup because of keeping month backup only
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET1_TIME="`date "+%Y-%m-01 09:00" --date '10 months ago'`"
+      - DATE1=`date "+%Y-%m-%d" --date "${TARGET1_TIME}"`
+      - TIME1=`date "+%Y%m%dT%H%M" --date "${TARGET1_TIME}"`
+      - MONTH_BACKUP="postgres15_postgres_1/${DATE1}/postgres15_postgres_1_${TIME1}.sql.gz"
+      - TARGET2_TIME="`date "+%Y-%m-20 09:00" --date '10 months ago'`"
+      - DATE2=`date "+%Y-%m-%d" --date "${TARGET2_TIME}"`
+      - TIME2=`date "+%Y%m%dT%H%M" --date "${TARGET2_TIME}"`
+      - NOT_MONTH_BACKUP="postgres15_postgres_1/${DATE2}/postgres15_postgres_1_${TIME2}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - cat error.log | grep 'Not found.'
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
+    - name: backup strategy for deleting month backup exceeding 36 months(3 years)
+      install:
+      - docker-compose --file tests/postgres15/docker-compose.yml up --detach
+      - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
+      - docker-compose --file tests/docker-compose-backup-strategy.yml build
+      - sleep 10
+      - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
+      before_script:
+      - TARGET_TIME=`date "+%Y-%m-01" --date '3 years ago 1 months ago'`
+      - DATE=`date "+%Y-%m-%d" --date "${TARGET_TIME}"`
+      - TIME=`date "+%Y%m%dT%H%M" --date "${TARGET_TIME}"`
+      - OLD_BACKUP="postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz"
+      script:
+      - echo '# SQL' | gzip > test.sql.gz
+      - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
+      - docker-compose --file tests/docker-compose-backup-strategy.yml run --rm backup
+      - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+      - cat error.log | grep 'Not found.'
+      - awslocal s3api list-objects --bucket "${BUCKET_NAME}"

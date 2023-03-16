@@ -1,6 +1,29 @@
-FROM alpine:3
+FROM ubuntu:latest
 
-RUN apk update && apk add --no-cache docker-cli aws-cli bash gnupg
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && \
+  apt install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release && \
+  mkdir -m 0755 -p /etc/apt/keyrings && \
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+  apt-get update && \
+  apt install -y docker-ce-cli cron gnupg jq
+
+RUN apt install -y unzip && \
+  mkdir /aws_build/ && \
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/aws_build/awscliv2.zip" && \
+  unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
+  /aws_build/aws/install && \
+  rm -rf /aws_build/
 
 COPY scripts/ /app/
+
 CMD bash /app/start.sh

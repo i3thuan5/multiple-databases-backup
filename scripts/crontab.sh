@@ -1,5 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "${SCHEDULE} sh /app/backup.sh" | crontab -
-crond -f
+echo "PATH=${PATH}
+${SCHEDULE} bash /app/backup.sh >> /var/log/cron.log 2>> /var/log/cron.error.log" \
+  | crontab -
+
+cron -f -L 15
