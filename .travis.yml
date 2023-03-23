@@ -1,3 +1,4 @@
+---
 os: linux
 dist: jammy
 services:
@@ -20,6 +21,12 @@ before_install:
 - pip install awscli-local
 jobs:
   include:
+    - name: backup once
+      before_install: skip
+      install:
+      - pip install yamllint
+      script:
+      - yamllint .
     - name: backup once
       install:
       - docker-compose --file tests/postgres15/docker-compose.yml up --detach
