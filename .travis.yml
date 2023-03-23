@@ -24,7 +24,8 @@ jobs:
     - name: Check YAML format
       before_install: skip
       install:
-        - pip install --upgrade yamllint
+        - pip install --upgrade pip setuptools
+        - pip install yamllint
       script:
         - yamllint .
     - name: backup once
