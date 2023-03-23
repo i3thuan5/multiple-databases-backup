@@ -129,15 +129,15 @@ The decryption command is:
 
 ### MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS
 
-This optional environment variable is how old backups kept. The default value is `72`. It means 72 hours, 3 days.
+This optional environment variable is how old backups kept. Every backup recently in this period will be kept. The default value is `72`. It means 72 hours, 3 days.
 
 ### MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS
 
-This optional environment variable is how many daily backups kept. The default value is `90`. It means 90 days, 3 months.
+This optional environment variable is how many daily backups kept. The daily backup is the first backup in one day. The default value is `90`. It means 90 days, 3 months.
 
 ### MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS
 
-This optional environment variable is how many monthly backups kept. The default value is `36`. It means 36 months, 3 years.
+This optional environment variable is how many monthly backups kept. The monthly backup is the first backup in one month. The default value is `36`. It means 36 months, 3 years.
 
 ## Examples
 
