@@ -21,9 +21,10 @@ before_install:
   - pip install awscli-local
 jobs:
   include:
-    - name: backup once
+    - name: Check YAML format
       before_install: skip
       install:
+        - pip install --upgrade pip setuptools
         - pip install yamllint
       script:
         - yamllint .
