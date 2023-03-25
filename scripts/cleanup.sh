@@ -5,7 +5,7 @@ source /app/filepath.sh
 
 CONTAINER_NAME=$1
 
-FILE_PATH=$(filepath ${CONTAINER_NAME} "${KEEP_EVERY_BACKUP_IN_HOURS} hours ago")
+FILE_PATH=$(filepath ${CONTAINER_NAME} "${MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS} hours ago")
 
 temp_dir=$(mktemp -d)
 ALL_FILES="${temp_dir}/all.list"
@@ -26,7 +26,7 @@ aws s3api list-objects-v2 \
   | jq .Contents[].Key \
   > "${PRESERVE_FILES}"
 
-for day in $(seq 1 "${KEEP_DAY_BACKUP_IN_DAYS}")
+for day in $(seq 1 "${MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS}")
 do
   TARGET_DAY=`date "+%Y-%m-%d" --date "${day} days ago"`
   FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
@@ -40,7 +40,7 @@ do
     >> "${PRESERVE_FILES}"
 done
 
-for month in $(seq 1 "${KEEP_MONTH_BACKUP_IN_MONTHS}")
+for month in $(seq 1 "${MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS}")
 do
   TARGET_DAY=`date "+%Y-%m-01" --date "${month} months ago"`
   FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")

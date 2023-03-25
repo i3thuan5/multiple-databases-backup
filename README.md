@@ -37,9 +37,9 @@ services:
       S3_SECRET_ACCESS_KEY: secret
       SCHEDULE: "0 * * * *"  # Optional
       GPG_PUBLIC_KEY: ${GPG_PUBLIC_KEY:-}  # Optional
-      KEEP_EVERY_BACKUP_IN_HOURS: 72  # Optional
-      KEEP_DAY_BACKUP_IN_DAYS: 90  # Optional
-      KEEP_MONTH_BACKUP_IN_MONTHS: 36  # Optional
+      MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS: 72  # Optional
+      MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS: 90  # Optional
+      MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS: 36  # Optional
 ```
 
 ## Features
@@ -66,7 +66,7 @@ Using the crontab daemon to backup periodly is for operation daily. For emergenc
 
 ### Cleanuping Old Backup Files for Comprehensive Strategy
 
-After backuping, the containers will cleanup old backups. The cleanuping deletes all backups except for recently backups, daily backups and monthly backups. The keeping startegy can be configured. Related: [KEEP_EVERY_BACKUP_IN_HOURS](#KEEP_EVERY_BACKUP_IN_HOURS), [KEEP_DAY_BACKUP_IN_DAYS](#KEEP_DAY_BACKUP_IN_DAYS), [KEEP_MONTH_BACKUP_IN_MONTHS](#KEEP_MONTH_BACKUP_IN_MONTHS).
+After backuping, the containers will cleanup old backups. The cleanuping deletes all backups except for recently backups, daily backups and monthly backups. The keeping startegy can be configured. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
 
 ### Security
 
@@ -127,17 +127,17 @@ The decryption command is:
 1. Import the gpg private key if you didn't import, `gpg --import <gpg-private-key.asc>`.
 2. Decrypt the backups, `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
 
-### KEEP_EVERY_BACKUP_IN_HOURS
+### MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS
 
-This optional environment variable is how old backups kept. The default value is `72`. It means 72 hours, 3 days.
+This optional environment variable is how old backups kept. Every backup recently in this period will be kept. The default value is `72`. It means 72 hours, 3 days.
 
-### KEEP_DAY_BACKUP_IN_DAYS
+### MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS
 
-This optional environment variable is how many daily backups kept. The default value is `90`. It means 90 days, 3 months.
+This optional environment variable is how many daily backups kept. The daily backup is the first backup in one day. The default value is `90`. It means 90 days, 3 months.
 
-### KEEP_MONTH_BACKUP_IN_MONTHS
+### MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS
 
-This optional environment variable is how many monthly backups kept. The default value is `36`. It means 36 months, 3 years.
+This optional environment variable is how many monthly backups kept. The monthly backup is the first backup in one month. The default value is `36`. It means 36 months, 3 years.
 
 ## Examples
 
@@ -162,9 +162,9 @@ services:
       S3_SECRET_ACCESS_KEY:
       SCHEDULE:
       GPG_PUBLIC_KEY:
-      KEEP_EVERY_BACKUP_IN_HOURS:
-      KEEP_DAY_BACKUP_IN_DAYS:
-      KEEP_MONTH_BACKUP_IN_MONTHS:
+      MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS:
+      MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS:
+      MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS:
     restart: always
 ```
 
@@ -180,7 +180,7 @@ S3_ACCESS_KEY_ID=
 S3_SECRET_ACCESS_KEY=
 SCHEDULE='0 * * * *'  # Backuping every hour
 GPG_PUBLIC_KEY=
-KEEP_EVERY_BACKUP_IN_HOURS=72  # 72 hours, 3 days
-KEEP_DAY_BACKUP_IN_DAYS=90  # 90 days, 3 months.
-KEEP_MONTH_BACKUP_IN_MONTHS=36  # 36 months, 3 years
+MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS=72  # 72 hours, 3 days
+MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS=90  # 90 days, 3 months.
+MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS=36  # 36 months, 3 years
 ```
