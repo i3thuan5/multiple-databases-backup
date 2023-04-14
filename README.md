@@ -59,11 +59,11 @@ Using the S3 CLI, it is possible to upload backup files to S3-compatible storage
 
 ### Manual Backup
 
-To perform an instant manual backup, simply launch a new backup container with the [`SCHEDULE`](#SCHEDULE) variable left empty. Related: [SCHEDULE](#SCHEDULE).
+To perform an instant manual backup, simply launch a new backup container with the [`SCHEDULE`](#SCHEDULE) variable left empty. See [Backup Schedule](#Backup_Schedule) for details.
 
 ### Retention Strategy to Remove Old Backup Files
 
-Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
+Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. See: [Retention Policy](#Retention_Policy) for details.
 
 ### Confidentiality and Integrity
 
@@ -73,7 +73,7 @@ GPG-encrypted backup is supported. See [GPG key](#GPG_KEY) for details on how to
 
 Our codebase undergoes automatic testing using Travis CI, which covers backup scripts and docker configurations. Furthermore, an automated build on dockerhub is also in place. These automated processes minimize the possibility of introducing bugs or vulnerabilities into our codebase.
 
-## Environment Variables
+## Configuration
 
 ### S3 Storage Configurations
 - `S3_ENDPOINT_URL` (required): The S3 endpoint URL in the form of `http://<hostname>/` or `https://<hostname>/
