@@ -85,7 +85,7 @@ Our codebase undergoes automatic testing using Travis CI, which covers backup sc
 
 ### Backup Schedule
 
-- `SCHEDULE`: The backup schedule specified in a crontab syntax string. Where the expressions minute, hour, day of the month, month of the year and day of the week. If set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
+- `SCHEDULE`: The backup schedule specified in a string following [crontab syntax](https://www.man7.org/linux/man-pages/man5/crontab.5.html) where the five fields are minute, hour, day of month, month and day of week. If set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
 
 
 ### GPG key
