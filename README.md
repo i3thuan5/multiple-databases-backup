@@ -85,16 +85,16 @@ Introducing to Continuous integration (CI) and dockerhub auto build to keep the 
 
 ### Backup Schedule
 
-- `SCHEDULE`: The backup schedule specified in a crontab syntax string. Where the expressions minute, hour, day of the month, month of the year and day of the week. If the variable is set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
+- `SCHEDULE`: The backup schedule specified in a crontab syntax string. Where the expressions minute, hour, day of the month, month of the year and day of the week. If set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
 
 
 ### GPG key
 
-- `GPG_PUBLIC_KEY`: base64-encoded GPG public key used in the encryption process.
+- `GPG_PUBLIC_KEY`: base64-encoded GPG public key used in the encryption process. If not set, backup files will be uploaded and saved un-encrypted.
 
 #### Generate and encode a GPG public key
 
-1. [Generating a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if there is not any existing GPG key.
+1. [Generate a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if there is not any existing GPG key.
 2. Encode GPG public key in base64 format and write it into the `.env` file.
 ```bash
 GPG_PUBLIC_KEY=`gpg --armor --export <GPG key ID> | base64 --wrap 0`
