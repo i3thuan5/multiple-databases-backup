@@ -18,7 +18,7 @@ services:
   postgres:
     image: postgres
     labels:
-      - backup.postgres=true  # Add label
+      - backup.postgres=true  # Add this label on database containers you wish to backup
     environment:
       POSTGRES_PASSWORD: secret
   mariadb:
