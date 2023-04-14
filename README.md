@@ -1,6 +1,6 @@
 # multiple-databases-backup
 
-Backup database dockers by one backup container securely.
+Backup databases from dockerized PostgresSQL to any S3-compatible storage with a single backup container. Supporting periodic backup schedule, S3 storage API and encrypted backups.
 
 [![Build Status](https://app.travis-ci.com/i3thuan5/multiple-databases-backup.svg?branch=main)](https://app.travis-ci.com/i3thuan5/multiple-databases-backup)
 [![GitHub](https://img.shields.io/github/license/i3thuan5/multiple-databases-backup)](https://github.com/i3thuan5/multiple-databases-backup/blob/main/LICENSE)
@@ -44,29 +44,26 @@ services:
 
 ## Features
 
-### Backup Together
+### Backup Multiple Databases at Once
 
-Backup the containers containing the labels together.
+Simply add the `backup.postgres=true` label on database containers that needs backup. The backup script will automatically discover containers with `backup.postgres=true` label and run the backup command against all of them.
 
-### Configuration Easily
 
-Only configuration is setting labels in database containers and setting storages and encryption variables in the backup container.
+### Easy Configuration
 
-### Production Ready
+All custom settings including backup schedule, S3 storage and encryption key can be configured in the `environment` of backup container. See the [docker-compose](#docker-compose) part for example configuration.
 
-Compatiabily to [docker-compose](#docker-compose) and docker-swarm.
+### Supports Any S3-compatiable Storages
 
-### Supporting S3 Remote Backup Natively
+Using the S3 CLI, it is possible to upload backup files to S3-compatible storage services offered by various vendors. The S3 connection settings can be customized through the "environment" configuration. See [S3 Storage Configurations](#S3_Storage_Configurations) for details.
 
-All backups are transfered to S3-compatiable remote storage to keep availability. Related: [S3_ENDPOINT_URL](#S3_ENDPOINT_URL), [S3_REGION](#S3_REGION), [S3_BUCKET](#S3_BUCKET), [S3_ACCESS_KEY_ID](#S3_ACCESS_KEY_ID), [S3_SECRET_ACCESS_KEY](#S3_SECRET_ACCESS_KEY).
+### Manual Backup
 
-### Supporting Backup Periodly and Backup once
+To perform an instant manual backup, simply launch a new backup container with the [`SCHEDULE`](#SCHEDULE) variable left empty. Related: [SCHEDULE](#SCHEDULE).
 
-Using the crontab daemon to backup periodly is for operation daily. For emergency, backup container can backup immediately. Related: [SCHEDULE](#SCHEDULE).
+### Retention Strategy to Remove Old Backup Files
 
-### Cleanuping Old Backup Files for Comprehensive Strategy
-
-After backuping, the containers will cleanup old backups. The cleanuping deletes all backups except for recently backups, daily backups and monthly backups. The keeping startegy can be configured. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
+Retention strategy can be established to remove backups older than a designated timeframe and retain the earliest backup of every day or month for a set duration. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
 
 ### Security
 
