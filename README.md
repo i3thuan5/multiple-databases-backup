@@ -63,15 +63,15 @@ To perform an instant manual backup, simply launch a new backup container with t
 
 ### Retention Strategy to Remove Old Backup Files
 
-Retention strategy can be established to remove backups older than a designated timeframe and retain the earliest backup of every day or month for a set duration. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
+Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
 
-### Security
+### Confidentiality and Integrity
 
-Preserves the confientiality and intgerity of backup process and backup files. The backup process is built by shell pipeline, without leaving any temporary file in the disk. It also supports encrypting the backup files. Related: [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY).
+GPG-encrypted backup is supported. See [GPG key](#GPG_KEY) for details on how to configure encrypted backups. Data is transferred on shell pipeline without leaving any unencrypted intermediate data on the disk, in order to preserve confidentiality and integrity of the backup files.
 
-### Robustness
+### Automated Test and Build
 
-Introducing to Continuous integration (CI) and dockerhub auto build to keep the backup script workable.
+Our codebase undergoes automatic testing using Travis CI, which covers backup scripts and docker configurations. Furthermore, an automated build on dockerhub is also in place. These automated processes minimize the possibility of introducing bugs or vulnerabilities into our codebase.
 
 ## Environment Variables
 
