@@ -1,6 +1,6 @@
 # multiple-databases-backup
 
-Backup databases from dockerized PostgresSQL to any S3-compatible storage with a single backup container. Supporting periodic backup schedule, S3 storage API and encrypted backups.
+Backup databases from dockerized PostgresSQL to any S3-compatible storage with a single backup container. Supporting periodic backup schedule, manual backup, encrypted backup and retention policy.
 
 [![Build Status](https://app.travis-ci.com/i3thuan5/multiple-databases-backup.svg?branch=main)](https://app.travis-ci.com/i3thuan5/multiple-databases-backup)
 [![GitHub](https://img.shields.io/github/license/i3thuan5/multiple-databases-backup)](https://github.com/i3thuan5/multiple-databases-backup/blob/main/LICENSE)
