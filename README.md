@@ -50,7 +50,7 @@ To backup multiple databases simultaneously, you can label the database containe
 
 ### Easy Configuration
 
-All custom settings including backup schedule, S3 storage and encryption key can be configured in the `environment` of backup container. See the [docker-compose](#docker-compose) part for example configuration.
+All custom settings including backup schedule, S3 storage and encryption key can be configured in the `environment` part in `docker-compose.yml` file of backup container. See the [docker-compose](#docker-compose) part for example configuration.
 
 ### Supports Any S3-compatiable Storages
 
@@ -62,7 +62,7 @@ To perform an instant manual backup, simply launch a new backup container with t
 
 ### Retention Strategy to Remove Old Backup Files
 
-Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. See: [Retention Policy](#Retention_Policy) for details.
+Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. See [Retention Policy](#Retention_Policy) for details.
 
 ### Confidentiality and Integrity
 
@@ -70,7 +70,7 @@ GPG-encrypted backup is supported. See [GPG key](#GPG_KEY) for details on how to
 
 ### Automated Test and Build
 
-Our codebase undergoes automatic testing using Travis CI, which covers backup scripts and docker configurations. Furthermore, an automated build on dockerhub is also in place. These automated processes minimize the possibility of introducing bugs or vulnerabilities into our codebase.
+The codebase undergoes automatic testing using Travis CI, which covers backup scripts and docker configurations. An automated build on dockerhub is also in place. These automated processes minimize the possibility of introducing bugs or vulnerabilities into our codebase.
 
 ## Configuration
 
@@ -117,7 +117,7 @@ gpg --decrypt <postgres15.sql.gz.gpg> | zcat
 
 ### Retention Policy
 
-There are 3 variables available for users to setup their retention policy. Backup files that are older than a specified period will be deleted, while a daily/monthly backup, which is the earliest backup file of the day/month, will be kept for a specified period.
+There are 3 variables available for users to setup their retention policy. Backup files that are older than a specified period will be deleted, while the earliest backup file of the day/month will be kept for a specified period.
 
 - `MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS`: The time period in **hours** to keep all the recent backups. Backup files that are older than this period will be deleted, except for the daily and monthly backups that are to be kept. The value should be any positive integer. The default value is `72` hours.
 - `MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS`: The time period in **days** to keep all the daily backups. Set the value to any positive integer to keep daily backups, or set it to `0` to disable this behavior. The default value is `90` days.
