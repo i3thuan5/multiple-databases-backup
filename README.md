@@ -54,19 +54,19 @@ All custom settings including backup schedule, S3 storage and encryption key can
 
 ### Supports Any S3-compatiable Storages
 
-Using the S3 CLI, it is possible to upload backup files to S3-compatible storage services offered by various vendors. The S3 connection settings can be customized through the "environment" configuration. See [S3 Storage Configurations](#S3_Storage_Configurations) for details.
+Using the S3 CLI, it is possible to upload backup files to S3-compatible storage services offered by various vendors. The S3 connection settings can be customized through the "environment" configuration. See [S3 Storage Configurations](#S3-Storage-Configurations) for details.
 
 ### Manual Backup
 
-To perform an instant manual backup, simply launch a new backup container with the [`SCHEDULE`](#SCHEDULE) variable left empty. See [Backup Schedule](#Backup_Schedule) for details.
+To perform an instant manual backup, simply launch a new backup container with the `SCHEDULE` variable left empty. See [Backup Schedule](#Backup-Schedule) for details.
 
 ### Retention Strategy to Remove Old Backup Files
 
-Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. See [Retention Policy](#Retention_Policy) for details.
+Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. See [Retention Policy](#Retention-Policy) for details.
 
 ### Confidentiality and Integrity
 
-GPG-encrypted backup is supported. See [GPG key](#GPG_KEY) for details on how to configure encrypted backups. Data is transferred on shell pipeline without leaving any unencrypted intermediate data on the disk, in order to preserve confidentiality and integrity of the backup files.
+GPG-encrypted backup is supported. See [GPG Key](#GPG-Key) for details on how to configure encrypted backups. Data is transferred on shell pipeline without leaving any unencrypted intermediate data on the disk, in order to preserve confidentiality and integrity of the backup files.
 
 ### Automated Test and Build
 
@@ -87,11 +87,11 @@ The codebase undergoes automatic testing using Travis CI, which covers backup sc
 - `SCHEDULE`: The backup schedule specified in a string following [crontab syntax](https://www.man7.org/linux/man-pages/man5/crontab.5.html) where the five fields are minute, hour, day of month, month and day of week. If set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
 
 
-### GPG key
+### GPG Key
 
 - `GPG_PUBLIC_KEY`: Base64-encoded GPG public key used in the encryption process. If not set, backup files will be uploaded and saved un-encrypted.
 
-#### Generate and encode a GPG public key
+#### Generate and Encode a GPG Public Pey
 
 1. [Generate a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if there is not any existing GPG key.
 2. Encode GPG public key in base64 format and write it into the `.env` file.
@@ -104,7 +104,7 @@ echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" > .env
 gpg --export-secret-keys --armor <GPG key ID> > <gpg-private-key.asc>
 ```
 
-#### Decrypt a backup file
+#### Decrypt a Backup File
 
 1. Import the gpg private key if it hasn't been imported yet.
 ```bash
