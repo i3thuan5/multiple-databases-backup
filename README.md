@@ -116,25 +116,21 @@ gpg --import <gpg-private-key.asc>
 gpg --decrypt <postgres15.sql.gz.gpg> | zcat
 ```
 
-### MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS
+### Retention Policy
 
-This optional environment variable is how old backups kept. Every backup recently in this period will be kept. The default value is `72`. It means 72 hours, 3 days.
+There are 3 variables available for users to setup their retention policy. Backup files that are older than a specified period will be deleted, while a daily/monthly backup, which is the earliest backup file of the day/month, will be kept for a specified period.
 
-### MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS
+- `MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS`: The time period in **hours** to keep all the recent backups. Backup files that are older than this period will be deleted, except for the daily and monthly backups that are to be kept. The default value is `72` hours.
+- `MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS`: The time period in **days** to keep all the daily backups. Earliest backup of each day is kept for this period. The default value is `90` days.
+- `MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS`: The time period in **months** to keep all the monthly backups. Earliest backup of each month is kept for this period. The default value is `36` months.
 
-This optional environment variable is how many daily backups kept. The daily backup is the first backup in one day. The default value is `90`. It means 90 days, 3 months.
-
-### MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS
-
-This optional environment variable is how many monthly backups kept. The monthly backup is the first backup in one month. The default value is `36`. It means 36 months, 3 years.
-
-## Examples
+## Example Configuration
 
 ### docker-compose
 
-Keep `docker-compose.yml` simple and set the variables in `.env`.
-
 #### docker-compose.yml
+
+Configure the `environment` part like this, so that the container is accepting environment variables set in `.env`.
 
 ```
 version: '3'
