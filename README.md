@@ -75,54 +75,46 @@ Introducing to Continuous integration (CI) and dockerhub auto build to keep the 
 
 ## Environment Variables
 
-### S3_ENDPOINT_URL
+### S3 Storage Configurations
+- `S3_ENDPOINT_URL` (required): The S3 endpoint URL in the form of `http://<hostname>/` or `https://<hostname>/
+`. Note that the scheme should be included.
+- `S3_REGION`: The name of the S3 region (eg. `eu-west-1`). This may be optional depending on your storage vendor.
+- `S3_BUCKET` (required): The bucket name.
+- `S3_ACCESS_KEY_ID` (required): The S3 Access Key ID.
+- `S3_SECRET_ACCESS_KEY` (required): The S3 Secret Access Key.
 
-This environment variable is required for S3 URL when connecting to S3, including scheme.
+### Backup Schedule
 
-### S3_REGION
+- `SCHEDULE`: The backup schedule specified in a crontab syntax string. Where the expressions minute, hour, day of the month, month of the year and day of the week. If the variable is set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
 
-This optional environment variable is the name of the S3 region to use. (eg. eu-west-1)
 
-### S3_BUCKET
+### GPG key
 
-This environment variable is required for S3 storage bucket name, as a string.
+- `GPG_PUBLIC_KEY`: base64-encoded GPG public key used in the encryption process.
 
-### S3_ACCESS_KEY_ID
+#### Generate and encode a GPG public key
 
-This environment variable is required for S3 access key, as a string.
-
-### S3_SECRET_ACCESS_KEY
-
-This environment variable is required for S3 secret access key, as a string.
-
-### SCHEDULE
-
-This optional environment variable is the backup schedule for backup. The format is crontab syntax containing settings for minute, hour, day of the month, month of the year and day of the week respectively. If this vairable is blank, the script will backup once and exit. The default value is blank.
-
-### GPG_PUBLIC_KEY
-
-This optional environment variable is used for asymmetric encryptions. It is base64 format of GPG public key. The configuration steps are:
-
-1. [Generating a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if you don't have an existing GPG key.
-2. Get base64 format of GPG public key and save to `.env` env-file:
+1. [Generating a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if there is not any existing GPG key.
+2. Encode GPG public key in base64 format and write it into the `.env` file.
 ```bash
 GPG_PUBLIC_KEY=`gpg --armor --export <GPG key ID> | base64 --wrap 0`
 echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" > .env
 ```
-3. Run with `docker-compose`, `docker-compose` will [read `.env` automatically](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with-an-env-file).
-Or pass the varivable to `docker`:
-```bash
-docker run --env-file .env ithuan/multiple-databases-backup
-```
-4. Export the private key and save it safely:
+3. Export the private key and store it securely. The private key is needed when decrypting a backup file.
 ```bash
 gpg --export-secret-keys --armor <GPG key ID> > <gpg-private-key.asc>
 ```
 
-The decryption command is:
+#### Decrypt a backup file
 
-1. Import the gpg private key if you didn't import, `gpg --import <gpg-private-key.asc>`.
-2. Decrypt the backups, `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
+1. Import the gpg private key if it hasn't been imported yet.
+```bash
+gpg --import <gpg-private-key.asc>
+```
+2. Decrypt the backup file to get the original SQL.
+```bash
+gpg --decrypt <postgres15.sql.gz.gpg> | zcat
+```
 
 ### MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS
 
