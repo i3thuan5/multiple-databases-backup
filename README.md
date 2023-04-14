@@ -90,7 +90,7 @@ Our codebase undergoes automatic testing using Travis CI, which covers backup sc
 
 ### GPG key
 
-- `GPG_PUBLIC_KEY`: base64-encoded GPG public key used in the encryption process. If not set, backup files will be uploaded and saved un-encrypted.
+- `GPG_PUBLIC_KEY`: Base64-encoded GPG public key used in the encryption process. If not set, backup files will be uploaded and saved un-encrypted.
 
 #### Generate and encode a GPG public key
 
@@ -120,6 +120,6 @@ gpg --decrypt <postgres15.sql.gz.gpg> | zcat
 
 There are 3 variables available for users to setup their retention policy. Backup files that are older than a specified period will be deleted, while a daily/monthly backup, which is the earliest backup file of the day/month, will be kept for a specified period.
 
-- `MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS`: The time period in **hours** to keep all the recent backups. Backup files that are older than this period will be deleted, except for the daily and monthly backups that are to be kept. The default value is `72` hours.
-- `MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS`: The time period in **days** to keep all the daily backups. Earliest backup of each day is kept for this period. The default value is `90` days.
-- `MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS`: The time period in **months** to keep all the monthly backups. Earliest backup of each month is kept for this period. The default value is `36` months.
+- `MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS`: The time period in **hours** to keep all the recent backups. Backup files that are older than this period will be deleted, except for the daily and monthly backups that are to be kept. The value should be any positive integer. The default value is `72` hours.
+- `MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS`: The time period in **days** to keep all the daily backups. Set the value to any positive integer to keep daily backups, or set it to `0` to disable this behavior. The default value is `90` days.
+- `MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS`: The time period in **months** to keep all the monthly backups. Set the value to any positive integer to keep monthly backups, or set it to `0` to disable this behavior. The default value is `36` months.
