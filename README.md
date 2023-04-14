@@ -44,10 +44,9 @@ services:
 
 ## Features
 
-### Backup Multiple Databases at Once
+### Backup Multiple Databases Simultaneously
 
-Simply add the `backup.postgres=true` label on database containers that needs backup. The backup script will automatically discover containers with `backup.postgres=true` label and run the backup command against all of them.
-
+To backup multiple databases simultaneously, you can label the database containers that require backup with the `backup.postgres=true` label. The backup script will then identify all containers with this label and execute the backup command for each of them. 
 
 ### Easy Configuration
 
