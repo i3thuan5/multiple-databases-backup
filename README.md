@@ -1,6 +1,6 @@
 # multiple-databases-backup
 
-Backup database dockers by one backup container securely.
+Backup databases from dockerized PostgresSQL to any S3-compatible storage with a single backup container. Supporting periodic backup schedule, manual backup, encrypted backup and retention policy.
 
 [![Build Status](https://app.travis-ci.com/i3thuan5/multiple-databases-backup.svg?branch=main)](https://app.travis-ci.com/i3thuan5/multiple-databases-backup)
 [![GitHub](https://img.shields.io/github/license/i3thuan5/multiple-databases-backup)](https://github.com/i3thuan5/multiple-databases-backup/blob/main/LICENSE)
@@ -18,7 +18,7 @@ services:
   postgres:
     image: postgres
     labels:
-      - backup.postgres=true  # Add label
+      - backup.postgres=true  # Add this label on database containers you wish to backup
     environment:
       POSTGRES_PASSWORD: secret
   mariadb:
@@ -44,143 +44,81 @@ services:
 
 ## Features
 
-### Backup Together
+### Backup Multiple Databases Simultaneously
 
-Backup the containers containing the labels together.
+To backup multiple databases simultaneously, you can label the database containers that require backup with the `backup.postgres=true` label. The backup script will then identify all containers with this label and execute the backup command for each of them. 
 
-### Configuration Easily
+### Easy Configuration
 
-Only configuration is setting labels in database containers and setting storages and encryption variables in the backup container.
+All custom settings including backup schedule, S3 storage and encryption key can be configured in the `environment` part in `docker-compose.yml` file of backup container. See the [docker-compose](#docker-compose) part for example configuration.
 
-### Production Ready
+### Supports Any S3-compatiable Storages
 
-Compatiabily to [docker-compose](#docker-compose) and docker-swarm.
+Using the S3 CLI, it is possible to upload backup files to S3-compatible storage services offered by various vendors. The S3 connection settings can be customized through the "environment" configuration. See [S3 Storage Configurations](#S3-Storage-Configurations) for details.
 
-### Supporting S3 Remote Backup Natively
+### Manual Backup
 
-All backups are transfered to S3-compatiable remote storage to keep availability. Related: [S3_ENDPOINT_URL](#S3_ENDPOINT_URL), [S3_REGION](#S3_REGION), [S3_BUCKET](#S3_BUCKET), [S3_ACCESS_KEY_ID](#S3_ACCESS_KEY_ID), [S3_SECRET_ACCESS_KEY](#S3_SECRET_ACCESS_KEY).
+To perform an instant backup manually, simply launch a new backup container with the `SCHEDULE` variable left empty. See [Backup Schedule](#Backup-Schedule) for details.
 
-### Supporting Backup Periodly and Backup once
+### Retention Strategy to Remove Old Backup Files
 
-Using the crontab daemon to backup periodly is for operation daily. For emergency, backup container can backup immediately. Related: [SCHEDULE](#SCHEDULE).
+Retention strategy can be established to remove backups older than a designated time period and retain the earliest backup of every day or month for a set duration. See [Retention Policy](#Retention-Policy) for details.
 
-### Cleanuping Old Backup Files for Comprehensive Strategy
+### Confidentiality and Integrity
 
-After backuping, the containers will cleanup old backups. The cleanuping deletes all backups except for recently backups, daily backups and monthly backups. The keeping startegy can be configured. Related: [MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS](#MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS), [MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS](#MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS), [MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS](#MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS).
+GPG-encrypted backup is supported. See [GPG Key](#GPG-Key) for details on how to configure encrypted backups. Data is transferred on shell pipeline without leaving any unencrypted intermediate data on the disk, in order to preserve confidentiality and integrity of the backup files.
 
-### Security
+### Automated Test and Build
 
-Preserves the confientiality and intgerity of backup process and backup files. The backup process is built by shell pipeline, without leaving any temporary file in the disk. It also supports encrypting the backup files. Related: [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY).
+The codebase undergoes automatic testing using Travis CI, which covers backup scripts and docker configurations. An automated build on dockerhub is also in place. These automated processes minimize the possibility of introducing bugs or vulnerabilities into our codebase.
 
-### Robustness
+## Configuration
 
-Introducing to Continuous integration (CI) and dockerhub auto build to keep the backup script workable.
+### S3 Storage Configurations
+- `S3_ENDPOINT_URL` (required): The S3 endpoint URL in the form of `http://<hostname>/` or `https://<hostname>/
+`. Note that the scheme should be included.
+- `S3_REGION`: The name of the S3 region (eg. `eu-west-1`). This may be optional depending on your storage vendor.
+- `S3_BUCKET` (required): The bucket name.
+- `S3_ACCESS_KEY_ID` (required): The S3 Access Key ID.
+- `S3_SECRET_ACCESS_KEY` (required): The S3 Secret Access Key.
 
-## Environment Variables
+### Backup Schedule
 
-### S3_ENDPOINT_URL
+- `SCHEDULE`: The backup schedule specified in a string following [crontab syntax](https://www.man7.org/linux/man-pages/man5/crontab.5.html) where the five fields are minute, hour, day of month, month and day of week. If set to a blank string, the script will perform a instant backup and exit. The default value is a blank string.
 
-This environment variable is required for S3 URL when connecting to S3, including scheme.
 
-### S3_REGION
+### GPG Key
 
-This optional environment variable is the name of the S3 region to use. (eg. eu-west-1)
+- `GPG_PUBLIC_KEY`: Base64-encoded GPG public key used in the encryption process. If not set, backup files will be uploaded and saved un-encrypted.
 
-### S3_BUCKET
+#### Generate and Encode a GPG Public Pey
 
-This environment variable is required for S3 storage bucket name, as a string.
-
-### S3_ACCESS_KEY_ID
-
-This environment variable is required for S3 access key, as a string.
-
-### S3_SECRET_ACCESS_KEY
-
-This environment variable is required for S3 secret access key, as a string.
-
-### SCHEDULE
-
-This optional environment variable is the backup schedule for backup. The format is crontab syntax containing settings for minute, hour, day of the month, month of the year and day of the week respectively. If this vairable is blank, the script will backup once and exit. The default value is blank.
-
-### GPG_PUBLIC_KEY
-
-This optional environment variable is used for asymmetric encryptions. It is base64 format of GPG public key. The configuration steps are:
-
-1. [Generating a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if you don't have an existing GPG key.
-2. Get base64 format of GPG public key and save to `.env` env-file:
+1. [Generate a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if there is not any existing GPG key.
+2. Encode GPG public key in base64 format and write it into the `.env` file.
 ```bash
 GPG_PUBLIC_KEY=`gpg --armor --export <GPG key ID> | base64 --wrap 0`
 echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" > .env
 ```
-3. Run with `docker-compose`, `docker-compose` will [read `.env` automatically](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with-an-env-file).
-Or pass the varivable to `docker`:
-```bash
-docker run --env-file .env ithuan/multiple-databases-backup
-```
-4. Export the private key and save it safely:
+3. Export the private key and store it securely. The private key is needed when decrypting a backup file.
 ```bash
 gpg --export-secret-keys --armor <GPG key ID> > <gpg-private-key.asc>
 ```
 
-The decryption command is:
+#### Decrypt a Backup File
 
-1. Import the gpg private key if you didn't import, `gpg --import <gpg-private-key.asc>`.
-2. Decrypt the backups, `gpg --decrypt <postgres15.sql.gz.gpg> | zcat`, the output is the original SQL.
-
-### MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS
-
-This optional environment variable is how old backups kept. Every backup recently in this period will be kept. The default value is `72`. It means 72 hours, 3 days.
-
-### MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS
-
-This optional environment variable is how many daily backups kept. The daily backup is the first backup in one day. The default value is `90`. It means 90 days, 3 months.
-
-### MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS
-
-This optional environment variable is how many monthly backups kept. The monthly backup is the first backup in one month. The default value is `36`. It means 36 months, 3 years.
-
-## Examples
-
-### docker-compose
-
-Keep `docker-compose.yml` simple and set the variables in `.env`.
-
-#### docker-compose.yml
-
+1. Import the gpg private key if it hasn't been imported yet.
+```bash
+gpg --import <gpg-private-key.asc>
 ```
-version: '3'
-services:
-  backup:
-    image: ithuan/multiple-databases-backup
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      S3_ENDPOINT_URL:
-      S3_REGION:
-      S3_BUCKET:
-      S3_ACCESS_KEY_ID:
-      S3_SECRET_ACCESS_KEY:
-      SCHEDULE:
-      GPG_PUBLIC_KEY:
-      MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS:
-      MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS:
-      MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS:
-    restart: always
+2. Decrypt the backup file to get the original SQL.
+```bash
+gpg --decrypt <postgres15.sql.gz.gpg> | zcat
 ```
 
-#### .env
+### Retention Policy
 
-The variables below are configurable. [GPG_PUBLIC_KEY](#GPG_PUBLIC_KEY) variables should be set by manually.
+There are 3 variables available for users to setup their retention policy. Backup files that are older than a specified period will be deleted, while the earliest backup file of the day/month will be kept for a specified period.
 
-```
-S3_ENDPOINT_URL=
-S3_REGION=
-S3_BUCKET=
-S3_ACCESS_KEY_ID=
-S3_SECRET_ACCESS_KEY=
-SCHEDULE='0 * * * *'  # Backuping every hour
-GPG_PUBLIC_KEY=
-MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS=72  # 72 hours, 3 days
-MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS=90  # 90 days, 3 months.
-MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS=36  # 36 months, 3 years
-```
+- `MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS`: The time period in **hours** to keep all the recent backups. Backup files that are older than this period will be deleted, except for the daily and monthly backups that are to be kept. The value should be any positive integer. The default value is `72` hours.
+- `MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS`: The time period in **days** to keep all the daily backups. Set the value to any positive integer to keep daily backups, or set it to `0` to disable this behavior. The default value is `90` days.
+- `MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS`: The time period in **months** to keep all the monthly backups. Set the value to any positive integer to keep monthly backups, or set it to `0` to disable this behavior. The default value is `36` months.
