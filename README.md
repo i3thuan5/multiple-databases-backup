@@ -58,7 +58,7 @@ Using the S3 CLI, it is possible to upload backup files to S3-compatible storage
 
 ### Manual Backup
 
-To perform an instant manual backup, simply launch a new backup container with the [`SCHEDULE`](#SCHEDULE) variable left empty. See [Backup Schedule](#Backup_Schedule) for details.
+To perform an instant backup manually, simply launch a new backup container with the [`SCHEDULE`](#SCHEDULE) variable left empty. See [Backup Schedule](#Backup_Schedule) for details.
 
 ### Retention Strategy to Remove Old Backup Files
 
@@ -84,7 +84,7 @@ The codebase undergoes automatic testing using Travis CI, which covers backup sc
 
 ### Backup Schedule
 
-- `SCHEDULE`: The backup schedule specified in a string following [crontab syntax](https://www.man7.org/linux/man-pages/man5/crontab.5.html) where the five fields are minute, hour, day of month, month and day of week. If set to a blank string, the script will perform a manual backup and exit. The default value is a blank string.
+- `SCHEDULE`: The backup schedule specified in a string following [crontab syntax](https://www.man7.org/linux/man-pages/man5/crontab.5.html) where the five fields are minute, hour, day of month, month and day of week. If set to a blank string, the script will perform a instant backup and exit. The default value is a blank string.
 
 
 ### GPG key
