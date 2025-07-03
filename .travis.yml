@@ -15,6 +15,7 @@ branches:
   only:
     - main
 before_install:
+  - pip install --upgrade pip setuptools
   - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
   - unzip -q awscliv2.zip
   - sudo ./aws/install
@@ -22,12 +23,33 @@ before_install:
 jobs:
   include:
     - name: Check YAML format
+      install:
+        - pip install tox
+      script:
+        - tox -e yamllint
+    - name: Check Markdown Format
+      install:
+        - pip install tox
+      script:
+        - tox -e pymarkdown
+    - name: Check Gherkin format
+      language: node_js
+      node_js: 22
       before_install: skip
       install:
-        - pip install --upgrade pip setuptools
-        - pip install yamllint
+        - npm install gherkin-lint
       script:
-        - yamllint .
+        - npx gherkin-lint
+    - name: Check Python Format
+      install:
+        - pip install tox
+      script:
+        - tox -e flake8
+    - name: Check Bash format
+      install:
+        - pip install tox
+      script:
+        - tox -e shellcheck
     - name: backup once
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
