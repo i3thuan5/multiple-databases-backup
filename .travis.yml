@@ -67,8 +67,7 @@ jobs:
         - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "postgres15_postgres_1/${DATE}/postgres15_postgres_1_${TIME}.sql.gz" postgres15.sql.gz
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: starting message
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -81,8 +80,7 @@ jobs:
         - cat backup.log | grep 'multiple-databases-backup is finished, exiting.'
         - cat backup.log
     - name: crontab
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -104,8 +102,7 @@ jobs:
         - docker-compose --file tests/docker-compose-backup-minute.yml exec backup cat /var/log/cron.log
         - docker-compose --file tests/docker-compose-backup-minute.yml exec backup cat /var/log/cron.error.log
     - name: backup once when erasing the SCHEDULE variable
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -116,8 +113,7 @@ jobs:
         - docker-compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup | tee backup.log
         - cat backup.log | grep 'There is not SCHEDULE variable'
     - name: exit with SCHEDULE wrong format
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -130,8 +126,7 @@ jobs:
         - cat backup.log | grep 'The SCHEDULE variable should contain five fields exactly.'
         - cat error.log | grep 'The exit code is 1.'
     - name: GPG encrypt with asymmetric key
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       env:
         - GPG_PRIVATE_KEY_PATH=tests/gpg-key/ithuan.tw.asc
         - GPG_PRIVATE_KEY_PASSPHRASE_PATH=tests/gpg-key/ithuan.tw.passphrase
@@ -153,8 +148,7 @@ jobs:
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
         - gpg --decrypt --batch --pinentry-mode loopback --passphrase-file ${GPG_PRIVATE_KEY_PASSPHRASE_PATH} postgres15.sql.gz.gpg | zcat
     - name: backup strategy for keeping backup in 72 hours(3 days)
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -173,8 +167,7 @@ jobs:
         - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting backup exceeding 72 hours(3 days)
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -199,8 +192,7 @@ jobs:
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping day backup in 90 days(3 months)
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -219,8 +211,7 @@ jobs:
         - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping day backups if they are backuped in different day.
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -245,8 +236,7 @@ jobs:
         - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${DAY2_BACKUP}" postgres15-2.sql.gz
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting backup because of keeping day backup only
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -271,8 +261,7 @@ jobs:
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting day backup exceeding 90 days(3 months)
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -297,8 +286,7 @@ jobs:
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping month backup in 36 months(3 years)
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -317,8 +305,7 @@ jobs:
         - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping month backups if they are backuped in different month.
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -343,8 +330,7 @@ jobs:
         - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${MONTH2_BACKUP}" postgres15-2.sql.gz
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting backup because of keeping month backup only
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
@@ -369,8 +355,7 @@ jobs:
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting month backup exceeding 36 months(3 years)
-      before_install:
-        <<: *before_install_aws
+      before_install: *before_install_aws
       install:
         - docker-compose --file tests/postgres15/docker-compose.yml up --detach
         - docker-compose --file tests/s3/docker-compose-localstack.yml up --detach
