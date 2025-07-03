@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -19,11 +19,11 @@ RUN apt update && \
 
 RUN apt install -y unzip && \
   mkdir /aws_build/ && \
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/aws_build/awscliv2.zip" && \
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.18.12.zip" -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
 
 WORKDIR /app/
-COPY scripts/ ./scripts/
-CMD bash scripts/start.sh
+COPY scripts/ /app/
+CMD bash /app/start.sh

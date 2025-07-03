@@ -5,7 +5,7 @@ export AWS_DEFAULT_REGION="${S3_REGION}"
 export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID}"
 export AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}"
 
-source scripts/filepath.sh
+source /app/filepath.sh
 
 if [ -z "${GPG_PUBLIC_KEY}" ]; then
   ENCRYPT_COMMAND="cat"
