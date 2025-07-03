@@ -54,9 +54,10 @@ do
     >> "${PRESERVE_FILES}"
 done
 
-for filename in `cat "${ALL_FILES}" \
+cat "${ALL_FILES}" \
   | grep --invert-match --line-regexp --file "${PRESERVE_FILES}" \
-  | sed 's/^"\(.*\)"$/\1/g'`
+  | sed 's/^"\(.*\)"$/\1/g' \
+  | while IFS= read -r filename
 do
   aws s3api delete-object \
     --endpoint-url "${S3_ENDPOINT_URL}" \
