@@ -5,7 +5,7 @@ source /app/filepath.sh
 
 CONTAINER_NAME=$1
 
-FILE_PATH=$(filepath ${CONTAINER_NAME} "${MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS} hours ago")
+FILE_PATH=$(filepath "${CONTAINER_NAME}" "${MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS} hours ago")
 
 temp_dir=$(mktemp -d)
 ALL_FILES="${temp_dir}/all.list"
@@ -43,7 +43,7 @@ done
 for month in $(seq 1 "${MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS}")
 do
   TARGET_DAY=`date "+%Y-%m-01" --date "${month} months ago"`
-  FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
+  FILE_PATH=$(filepath "${CONTAINER_NAME}" "${TARGET_DAY}")
   aws s3api list-objects-v2 \
       --endpoint-url "${S3_ENDPOINT_URL}" \
       --bucket "${S3_BUCKET}" \
