@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-source /app/filepath.sh
+source filepath.sh
 
 CONTAINER_NAME=$1
 
@@ -29,7 +29,7 @@ aws s3api list-objects-v2 \
 for day in $(seq 1 "${MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS}")
 do
   TARGET_DAY=`date "+%Y-%m-%d" --date "${day} days ago"`
-  FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
+  FILE_PATH=$(filepath "${CONTAINER_NAME}" "${TARGET_DAY}")
   aws s3api list-objects-v2 \
       --endpoint-url "${S3_ENDPOINT_URL}" \
       --bucket "${S3_BUCKET}" \
@@ -61,7 +61,7 @@ do
   aws s3api delete-object \
     --endpoint-url "${S3_ENDPOINT_URL}" \
     --bucket "${S3_BUCKET}" \
-    --key ${filename}
+    --key "${filename}"
 done
 
 rm -rf "${temp_dir}"

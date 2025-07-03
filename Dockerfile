@@ -24,6 +24,6 @@ RUN apt install -y unzip && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
 
-COPY scripts/ /app/
-
-CMD bash /app/start.sh
+WORKDIR /app/
+COPY scripts/ ./
+CMD bash start.sh
