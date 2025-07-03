@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-source filepath.sh
+source scripts/filepath.sh
 
 CONTAINER_NAME=$1
 
