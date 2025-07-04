@@ -55,13 +55,13 @@ jobs:
         - curl -SL https://github.com/docker/compose/releases/download/v2.38.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
         - chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - docker compose --file tests/docker-compose-backup.yml up --detach
+        - docker compose --file tests/docker-compose-backup.yml up --detach --quiet-pull
         - DATE=`date "+%Y-%m-%d"`
         - TIME=`date "+%Y%m%dT%H%M"`
         - sleep 10
@@ -70,9 +70,9 @@ jobs:
     - name: starting message
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
@@ -83,13 +83,13 @@ jobs:
     - name: crontab
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-minute.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-minute.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - docker compose --file tests/docker-compose-backup-minute.yml up --detach
+        - docker compose --file tests/docker-compose-backup-minute.yml up --detach --quiet-pull
         - sleep 1m
         - DATE=`date "+%Y-%m-%d"`
         - TIME=`date "+%Y%m%dT%H%M"`
@@ -105,9 +105,9 @@ jobs:
     - name: backup once when erasing the SCHEDULE variable
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-minute.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-minute.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
@@ -116,9 +116,9 @@ jobs:
     - name: exit with SCHEDULE wrong format
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-minute.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-minute.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
@@ -132,9 +132,9 @@ jobs:
         - GPG_PRIVATE_KEY_PATH=tests/gpg-key/ithuan.tw.asc
         - GPG_PRIVATE_KEY_PASSPHRASE_PATH=tests/gpg-key/ithuan.tw.passphrase
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-encrypt.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-encrypt.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
@@ -151,9 +151,9 @@ jobs:
     - name: backup strategy for keeping backup in 72 hours(3 days)
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -170,9 +170,9 @@ jobs:
     - name: backup strategy for deleting backup exceeding 72 hours(3 days)
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -195,9 +195,9 @@ jobs:
     - name: backup strategy for keeping day backup in 90 days(3 months)
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -214,9 +214,9 @@ jobs:
     - name: backup strategy for keeping day backups if they are backuped in different day.
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -239,9 +239,9 @@ jobs:
     - name: backup strategy for deleting backup because of keeping day backup only
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -264,9 +264,9 @@ jobs:
     - name: backup strategy for deleting day backup exceeding 90 days(3 months)
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -289,9 +289,9 @@ jobs:
     - name: backup strategy for keeping month backup in 36 months(3 years)
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -308,9 +308,9 @@ jobs:
     - name: backup strategy for keeping month backups if they are backuped in different month.
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -333,9 +333,9 @@ jobs:
     - name: backup strategy for deleting backup because of keeping month backup only
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
@@ -358,9 +358,9 @@ jobs:
     - name: backup strategy for deleting month backup exceeding 36 months(3 years)
       before_install: *before_install_aws
       install:
-        - docker compose --file tests/postgres15/docker-compose.yml up --detach
-        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach
-        - docker compose --file tests/docker-compose-backup-strategy.yml build
+        - docker compose --file tests/postgres15/docker-compose.yml up --detach --quiet-pull
+        - docker compose --file tests/s3/docker-compose-localstack.yml up --detach --quiet-pull
+        - docker compose --file tests/docker-compose-backup-strategy.yml build --quiet
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       before_script:
