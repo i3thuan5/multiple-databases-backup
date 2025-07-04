@@ -54,8 +54,11 @@ do
     >> "${PRESERVE_FILES}"
 done
 
-cat "${ALL_FILES}" \
-  | grep --invert-match --line-regexp --file "${PRESERVE_FILES}" \
+sort -u "${ALL_FILES}" > "${temp_dir}/tmp.list"
+mv "${temp_dir}/tmp.list" "${ALL_FILES}"
+sort -u "${PRESERVE_FILES}" > "${temp_dir}/tmp.list"
+mv "${temp_dir}/tmp.list" "${PRESERVE_FILES}"
+comm -1 "${ALL_FILES}" "${PRESERVE_FILES}" \
   | sed 's/^"\(.*\)"$/\1/g' \
   | while IFS= read -r filename
 do
