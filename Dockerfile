@@ -27,4 +27,4 @@ RUN apt install -y unzip && \
 
 WORKDIR /app/
 COPY scripts/ /app/
-CMD bash /app/start.sh
+CMD ["bash", "/app/start.sh"]
