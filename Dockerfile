@@ -18,7 +18,8 @@ RUN apt update && \
 RUN useradd --uid 1001 nonroot --user-group && \
   usermod -aG docker nonroot && \
   touch /etc/environment && \
-  chown nonroot:nonroot /etc/environment
+  chown nonroot:nonroot /etc/environment && \
+  chmod u+s /usr/sbin/cron
 
 WORKDIR /app/
 COPY scripts/ /app/
