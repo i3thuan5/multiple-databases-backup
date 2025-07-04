@@ -23,7 +23,7 @@ all_containers=`docker container list \
 for postgres_container_name in $all_containers
 do
   >&2 echo "Backuping ${postgres_container_name} is starting."
-  FILE_PATH=$(filepath ${postgres_container_name} 'now')
+  FILE_PATH=$(filepath "${postgres_container_name}" 'now')
   docker exec "${postgres_container_name}" pg_dump -U postgres \
     | gzip \
     | ${ENCRYPT_COMMAND} \
