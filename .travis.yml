@@ -76,7 +76,7 @@ jobs:
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - docker compose --file tests/docker-compose-backup.yml run --rm backup | tee backup.log
+        - docker compose --file tests/docker-compose-backup.yml run --rm backup 2>&1 | tee backup.log
         - cat backup.log | grep 'multiple-databases-backup is starting.'
         - cat backup.log | grep 'multiple-databases-backup is finished, exiting.'
         - cat backup.log
@@ -111,7 +111,7 @@ jobs:
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - docker compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup | tee backup.log
+        - docker compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup 2>&1 | tee backup.log
         - cat backup.log | grep 'There is not SCHEDULE variable'
     - name: exit with SCHEDULE wrong format
       before_install: *before_install_aws
@@ -122,7 +122,7 @@ jobs:
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - (docker compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE="0 * *" backup > backup.log) || (echo "The exit code is $?." | tee error.log)
+        - (docker compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE="0 * *" backup > backup.log) || (echo "The exit code is $?." 2>&1 | tee error.log)
         - cat backup.log
         - cat backup.log | grep 'The SCHEDULE variable should contain five fields exactly.'
         - cat error.log | grep 'The exit code is 1.'
@@ -140,7 +140,7 @@ jobs:
       script:
         - gpg --import --batch ${GPG_PRIVATE_KEY_PATH}
         - GPG_PUBLIC_KEY=`gpg --armor --export ithuan+multiple-databases-backup@ithuan.tw | base64 --wrap 0`
-        - echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" | tee tests/.env
+        - echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" 2>&1 | tee tests/.env
         - DATE=`date "+%Y-%m-%d"`
         - TIME=`date "+%Y%m%dT%H%M"`
         - docker compose --file tests/docker-compose-backup-encrypt.yml run --rm backup
@@ -189,7 +189,7 @@ jobs:
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
         - docker compose --file tests/docker-compose-backup-strategy.yml run --rm backup
-        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' 2>&1 | tee error.log)
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping day backup in 90 days(3 months)
@@ -258,7 +258,7 @@ jobs:
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${DAY_BACKUP}" --body test.sql.gz
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" --body test.sql.gz
         - docker compose --file tests/docker-compose-backup-strategy.yml run --rm backup
-        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_DAY_BACKUP}" postgres15.sql.gz || (echo 'Not found.' 2>&1 | tee error.log)
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting day backup exceeding 90 days(3 months)
@@ -283,7 +283,7 @@ jobs:
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
         - docker compose --file tests/docker-compose-backup-strategy.yml run --rm backup
-        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' 2>&1 | tee error.log)
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for keeping month backup in 36 months(3 years)
@@ -352,7 +352,7 @@ jobs:
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${MONTH_BACKUP}" --body test.sql.gz
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" --body test.sql.gz
         - docker compose --file tests/docker-compose-backup-strategy.yml run --rm backup
-        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${NOT_MONTH_BACKUP}" postgres15.sql.gz || (echo 'Not found.' 2>&1 | tee error.log)
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
     - name: backup strategy for deleting month backup exceeding 36 months(3 years)
@@ -372,6 +372,6 @@ jobs:
         - echo '# SQL' | gzip > test.sql.gz
         - awslocal s3api put-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" --body test.sql.gz
         - docker compose --file tests/docker-compose-backup-strategy.yml run --rm backup
-        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' | tee error.log)
+        - awslocal s3api get-object --bucket "${BUCKET_NAME}" --key "${OLD_BACKUP}" postgres15.sql.gz || (echo 'Not found.' 2>&1 | tee error.log)
         - cat error.log | grep 'Not found.'
         - awslocal s3api list-objects --bucket "${BUCKET_NAME}"
