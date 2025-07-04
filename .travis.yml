@@ -111,7 +111,7 @@ jobs:
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - docker compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE= backup 2>&1 | tee backup.log
+        - docker compose --file tests/docker-compose-backup-minute.yml run --rm -e SCHEDULE= backup 2>&1 | tee backup.log
         - cat backup.log | grep 'There is not SCHEDULE variable'
     - name: exit with SCHEDULE wrong format
       before_install: *before_install_aws
@@ -122,7 +122,7 @@ jobs:
         - sleep 10
         - awslocal s3api create-bucket --bucket "${BUCKET_NAME}"
       script:
-        - (docker compose --file tests/docker-compose-backup-minute.yml run -e SCHEDULE="0 * *" backup 2> backup.log) || (echo "The exit code is $?." | tee error.log)
+        - (docker compose --file tests/docker-compose-backup-minute.yml run --rm -e SCHEDULE="0 * *" backup 2> backup.log) || (echo "The exit code is $?." | tee error.log)
         - cat backup.log
         - cat backup.log | grep 'The SCHEDULE variable should contain five fields exactly.'
         - cat error.log | grep 'The exit code is 1.'
