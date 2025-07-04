@@ -1,32 +1,22 @@
 FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-
-RUN addgroup --gid 1000 nonroot && \
-  adduser --uid 1000 --disabled-password --ingroup nonroot --quiet nonroot
-
+RUN groupadd --system --gid 138 docker
 RUN apt update && \
-  apt install -y \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release && \
-  mkdir -m 0755 -p /etc/apt/keyrings && \
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-    | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
-  echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-  apt-get update && \
-  apt install -y docker-ce-cli cron gnupg jq
+  apt install -y docker.io cron gnupg jq
 
 # https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst?plain=1
-RUN apt install -y unzip && \
+RUN apt install -y curl unzip && \
   mkdir /aws_build/ && \
   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip" -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
+
+RUN useradd --uid 1001 nonroot --user-group # --groups docker
+RUN usermod -aG docker nonroot
+RUN touch /etc/environment
+RUN chown nonroot:nonroot /etc/environment
 
 WORKDIR /app/
 COPY scripts/ /app/
