@@ -22,4 +22,4 @@ WORKDIR /app/
 COPY scripts/ /app/
 
 USER nonroot
-CMD bash /app/start.sh
+CMD ["bash", "/app/start.sh"]
