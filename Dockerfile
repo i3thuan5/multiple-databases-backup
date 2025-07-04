@@ -20,7 +20,7 @@ RUN apt update && \
 # https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst?plain=1
 RUN apt install -y unzip && \
   mkdir /aws_build/ && \
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.18.12.zip" -o "/aws_build/awscliv2.zip" && \
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip" -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
