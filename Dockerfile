@@ -9,7 +9,9 @@ RUN apt update && \
     curl unzip && \
   apt-get clean && \
   mkdir /aws_build/ && \
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip" -o "/aws_build/awscliv2.zip" && \
+  curl --proto "=https" --tlsv1.2 -sSf \
+    -L "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip" \
+    -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
