@@ -1,6 +1,9 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+
+RUN addgroup --gid 1000 nonroot && \
+  adduser --uid 1000 --disabled-password --ingroup nonroot --quiet nonroot
 
 RUN apt update && \
   apt install -y \
@@ -27,4 +30,6 @@ RUN apt install -y unzip && \
 
 WORKDIR /app/
 COPY scripts/ /app/
+
+USER nonroot
 CMD bash /app/start.sh
