@@ -50,6 +50,10 @@ jobs:
       before_install: &before_install_aws
         - pip install --upgrade pip setuptools
         - pip install -r requirements_travisci.txt
+        - DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+        - mkdir -p $DOCKER_CONFIG/cli-plugins
+        - curl -SL https://github.com/docker/compose/releases/download/v2.38.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+        - chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
       install:
         - docker compose --file tests/postgres15/docker compose.yml up --detach
         - docker compose --file tests/s3/docker compose-localstack.yml up --detach
