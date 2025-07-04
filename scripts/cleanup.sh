@@ -58,8 +58,8 @@ sort -u "${ALL_FILES}" > "${temp_dir}/tmp.list"
 mv "${temp_dir}/tmp.list" "${ALL_FILES}"
 sort -u "${PRESERVE_FILES}" > "${temp_dir}/tmp.list"
 mv "${temp_dir}/tmp.list" "${PRESERVE_FILES}"
-comm -1 "${ALL_FILES}" "${PRESERVE_FILES}" \
-  | sed 's/^[[:space:]]"\(.*\)"$/\1/g' \
+comm -23 "${ALL_FILES}" "${PRESERVE_FILES}" \
+  | sed 's/^[[:space:]]*"\(.*\)"$/\1/g' \
   | while IFS= read -r filename
 do
   aws s3api delete-object \
