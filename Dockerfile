@@ -1,7 +1,6 @@
 FROM ubuntu:24.04
 # https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst?plain=1
 
-RUN groupadd --system --gid 138 docker
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt update && \
   apt install --no-install-recommends -y \
@@ -15,13 +14,7 @@ RUN apt update && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
 
-RUN useradd --uid 1001 nonroot --user-group && \
-  usermod -aG docker nonroot && \
-  touch /etc/environment && \
-  chown nonroot:nonroot /etc/environment
-
 WORKDIR /app/
 COPY scripts/ /app/
 
-USER nonroot
 CMD ["bash", "/app/start.sh"]
