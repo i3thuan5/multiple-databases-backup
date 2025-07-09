@@ -5,7 +5,7 @@ source /app/filepath.sh
 
 CONTAINER_NAME=$1
 
-FILE_PATH=$(filepath ${CONTAINER_NAME} "${MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS} hours ago")
+FILE_PATH=$(filepath "${CONTAINER_NAME}" "${MAX_PERIOD_IN_HOURS_TO_KEEP_EVERY_BACKUPS} hours ago")
 
 temp_dir=$(mktemp -d)
 ALL_FILES="${temp_dir}/all.list"
@@ -29,7 +29,7 @@ aws s3api list-objects-v2 \
 for day in $(seq 1 "${MAX_PERIOD_IN_DAYS_TO_KEEP_DAILY_BACKUPS}")
 do
   TARGET_DAY=`date "+%Y-%m-%d" --date "${day} days ago"`
-  FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
+  FILE_PATH=$(filepath "${CONTAINER_NAME}" "${TARGET_DAY}")
   aws s3api list-objects-v2 \
       --endpoint-url "${S3_ENDPOINT_URL}" \
       --bucket "${S3_BUCKET}" \
@@ -43,7 +43,7 @@ done
 for month in $(seq 1 "${MAX_PERIOD_IN_MONTHS_TO_KEEP_MONTHLY_BACKUPS}")
 do
   TARGET_DAY=`date "+%Y-%m-01" --date "${month} months ago"`
-  FILE_PATH=$(filepath ${CONTAINER_NAME} "${TARGET_DAY}")
+  FILE_PATH=$(filepath "${CONTAINER_NAME}" "${TARGET_DAY}")
   aws s3api list-objects-v2 \
       --endpoint-url "${S3_ENDPOINT_URL}" \
       --bucket "${S3_BUCKET}" \
@@ -54,14 +54,18 @@ do
     >> "${PRESERVE_FILES}"
 done
 
-for filename in `cat "${ALL_FILES}" \
-  | grep --invert-match --line-regexp --file "${PRESERVE_FILES}" \
-  | sed 's/^"\(.*\)"$/\1/g'`
+sort -u "${ALL_FILES}" > "${temp_dir}/tmp.list"
+mv "${temp_dir}/tmp.list" "${ALL_FILES}"
+sort -u "${PRESERVE_FILES}" > "${temp_dir}/tmp.list"
+mv "${temp_dir}/tmp.list" "${PRESERVE_FILES}"
+comm -23 "${ALL_FILES}" "${PRESERVE_FILES}" \
+  | sed 's/^[[:space:]]*"\(.*\)"$/\1/g' \
+  | while IFS= read -r filename
 do
   aws s3api delete-object \
     --endpoint-url "${S3_ENDPOINT_URL}" \
     --bucket "${S3_BUCKET}" \
-    --key ${filename}
+    --key "${filename}"
 done
 
 rm -rf "${temp_dir}"

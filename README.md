@@ -12,7 +12,7 @@ Backup databases from dockerized PostgresSQL to any S3-compatible storage with a
 
 ## Quick Start
 
-```
+```yaml
 version: '3'
 services:
   postgres:
@@ -46,7 +46,7 @@ services:
 
 ### Backup Multiple Databases Simultaneously
 
-To backup multiple databases simultaneously, you can label the database containers that require backup with the `backup.postgres=true` label. The backup script will then identify all containers with this label and execute the backup command for each of them. 
+To backup multiple databases simultaneously, you can label the database containers that require backup with the `backup.postgres=true` label. The backup script will then identify all containers with this label and execute the backup command for each of them.
 
 ### Easy Configuration
 
@@ -75,6 +75,7 @@ The codebase undergoes automatic testing using Travis CI, which covers backup sc
 ## Configuration
 
 ### S3 Storage Configurations
+
 - `S3_ENDPOINT_URL` (required): The S3 endpoint URL in the form of `http://<hostname>/` or `https://<hostname>/
 `. Note that the scheme should be included.
 - `S3_REGION`: The name of the S3 region (eg. `eu-west-1`). This may be optional depending on your storage vendor.
@@ -86,7 +87,6 @@ The codebase undergoes automatic testing using Travis CI, which covers backup sc
 
 - `SCHEDULE`: The backup schedule specified in a string following [crontab syntax](https://www.man7.org/linux/man-pages/man5/crontab.5.html) where the five fields are minute, hour, day of month, month and day of week. If set to a blank string, the script will perform a instant backup and exit. The default value is a blank string.
 
-
 ### GPG Key
 
 - `GPG_PUBLIC_KEY`: Base64-encoded GPG public key used in the encryption process. If not set, backup files will be uploaded and saved un-encrypted.
@@ -95,11 +95,14 @@ The codebase undergoes automatic testing using Travis CI, which covers backup sc
 
 1. [Generate a new GPG key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) if there is not any existing GPG key.
 2. Encode GPG public key in base64 format and write it into the `.env` file.
+
 ```bash
 GPG_PUBLIC_KEY=`gpg --armor --export <GPG key ID> | base64 --wrap 0`
 echo "GPG_PUBLIC_KEY=${GPG_PUBLIC_KEY}" > .env
 ```
+
 3. Export the private key and store it securely. The private key is needed when decrypting a backup file.
+
 ```bash
 gpg --export-secret-keys --armor <GPG key ID> > <gpg-private-key.asc>
 ```
@@ -107,10 +110,13 @@ gpg --export-secret-keys --armor <GPG key ID> > <gpg-private-key.asc>
 #### Decrypt a Backup File
 
 1. Import the gpg private key if it hasn't been imported yet.
+
 ```bash
 gpg --import <gpg-private-key.asc>
 ```
+
 2. Decrypt the backup file to get the original SQL.
+
 ```bash
 gpg --decrypt <postgres15.sql.gz.gpg> | zcat
 ```
