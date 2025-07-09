@@ -1,30 +1,20 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
+# https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst?plain=1
 
 ARG DEBIAN_FRONTEND=noninteractive
-
 RUN apt update && \
-  apt install -y \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release && \
-  mkdir -m 0755 -p /etc/apt/keyrings && \
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-    | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
-  echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-  apt-get update && \
-  apt install -y docker-ce-cli cron gnupg jq
-
-# https://github.com/aws/aws-cli/blob/v2/CHANGELOG.rst?plain=1
-RUN apt install -y unzip && \
+  apt install --no-install-recommends -y \
+    docker.io cron gnupg jq \
+    curl ca-certificates unzip && \
+  apt-get clean && \
   mkdir /aws_build/ && \
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.18.12.zip" -o "/aws_build/awscliv2.zip" && \
+  update-ca-certificates && \
+  curl -sSf "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip" -o "/aws_build/awscliv2.zip" && \
   unzip -q /aws_build/awscliv2.zip -d /aws_build/ && \
   /aws_build/aws/install && \
   rm -rf /aws_build/
 
 WORKDIR /app/
 COPY scripts/ /app/
+
 CMD ["bash", "/app/start.sh"]
